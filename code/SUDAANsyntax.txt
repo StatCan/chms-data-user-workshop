@@ -1,0 +1,274 @@
+
+
+/**********************************************************************/
+/*******************	SAS-callable SUDAAN syntax  *******************/
+/**********************************************************************/
+
+/* SAS-callable SUDAAN program used to generate the estimates for the CHMS data user workshop */
+	
+
+/* Steps 1a to 2 need to be run in SAS */
+
+
+/*--------------------------------------------
+    Step 3a:  Estimate proportions
+----------------------------------------------*/
+
+/* Estimates the distribution of sleeping trouble across sex */
+
+proc crosstab data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	tables sex*sleepprob;
+	class sex sleepprob;
+	TEST chisq  / all;
+	title "Step 3a: Estimate proportions";
+	print nsum="SAMSIZE" wsum="POPSIZE" rowper serow lowrow uprow / stest=default WSUMFMT=F8.0;
+run;
+/* NOTE: SUDAAN produces an Chisquare adjusted WaldF test statistic   */
+
+/*-----------------------------------------------------
+    Step 3b:  Testing differences between proportions
+------------------------------------------------------*/
+
+/* Tests the difference in proportions between males and females for each category of sleeping trouble */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var sleepprob sleepprob sleepprob sleepprob;
+	catlevel 1 2 3 4;
+	class sex;
+	contrast sex=(1 -1)/name="males versus females";
+	title "Step 3b: Testing differences between proportions";
+run;
+
+/*--------------------------------------------
+    Step 4a: Estimate arithmetic means
+----------------------------------------------*/
+
+/* Estimates the average number of hours spent sleeping across age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var sleephrs;
+	tables agegrp;
+	class agegrp;
+	title "Step 4a: Estimate arithmetic means";
+	print nsum="SAMSIZE" mean semean lowmean upmean/style=NCHS;
+run;
+
+/*---------------------------------------------------------
+    Step 4b: Testing differences between arithmetic means
+----------------------------------------------------------*/
+
+/* Tests whether the average number of hours spent sleeping by 6-11 year olds is statistically
+	different from that of each of the other age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var sleephrs;
+	class agegrp;
+	contrast agegrp=(1 -1 0 0 0 0 ) / name="3-5 versus 6-11";
+	contrast agegrp=(0 -1 1 0 0 0 ) / name="12-19 versus 6-11";
+	contrast agegrp=(0 -1 0 1 0 0 ) / name="20-39 versus 6-11";
+	contrast agegrp=(0 -1 0 0 1 0 ) / name="40-59 versus 6-11";
+	contrast agegrp=(0 -1 0 0 0 1 ) / name="60-79 versus 6-11";
+	title "Step 4b: Testing differences between arithmetic means";
+	print mean lowmean upmean p_mean ;
+run;
+
+/*------------------------------------------------------------
+    Step 5b: Estimate geometric mean and confidence intervals 
+-------------------------------------------------------------*/
+
+/* Using SUDAAN (but a bit of SAS too for some computation and data manipulation) */
+
+/* Five-step process to produce estimates of the geometric mean (and CLs) of blood total mercury (Bmercury_CU)
+	across age groups.  These steps are needed because SUDAAN can output a geometric mean and its
+	standard error, but cannot directly output the confidence intervals for a geometric mean */
+
+		/* Step I: Estimate the geometric mean of Bmercury_CU across age groups and output to the file called "outa_" */
+		/*** this is SUDAAN syntax ***/
+		title;
+		proc descript data=derived design=BRR DDF=11;
+			weight wgt_full;
+			REPWGT bsw1-bsw500;
+			var Bmercury_CU;
+			tables agegrp;
+			class agegrp;
+			title "Step 5b: Estimate geometric mean";
+			output nsum="SAMSIZE" geomean/filename=outa_ filetype=SAS;
+			print nsum="SAMSIZE" geomean/style=NCHS;
+		run;
+
+		/* Step II:  Saves agegrp, nsum, and geomean in output file "outa" */
+		/*** this is SAS syntax ***/
+		data outa;
+			set outa_;
+			keep agegrp nsum geomean;
+		run;
+
+
+		/* Step III: Estimate the confidence limits of the mean of the log of blood total mercury (Bmercury_CU_log) and output
+			to the file	called "outb_" */
+		/*** this is SUDAAN syntax ***/
+		proc descript data=derived design=BRR DDF=11;
+			weight wgt_full;
+			REPWGT bsw1-bsw500;
+			var Bmercury_CU_log;
+			tables agegrp;
+			class agegrp;
+			output nsum="SAMSIZE" mean lowmean upmean/filename=outb_ filetype=SAS;
+		run;
+
+
+		/* Step IV: Estimate the antilog of the confidence limits of Bmercury_CU_log to obtain the CLs
+			of the geometric mean of blood total mercury and output to the file called "outb" */ 
+		/*** this is SAS syntax ***/
+		data outb;
+			set outb_;
+			lowgeom=exp(lowmean);
+			upgeom=exp(upmean);
+			keep agegrp lowgeom upgeom;
+		run;
+
+
+		/* Step V: Sort the two output files and merge into a single file called "both" */
+		/*** this is SAS syntax ***/
+		proc sort data=outa;
+			by agegrp;
+		run;
+
+		proc sort data=outb;
+			by agegrp;
+		run;
+
+		data both;
+			merge outa outb;
+			by agegrp;
+		run;
+
+		proc datasets nolist nodetails;
+		 	delete outa outa_ outb outb_;
+		quit;
+
+/*----------------------------------------------------------------------------
+   Estimate arithmetic mean and confidence intervals for comparison purposes 
+   with the geometric mean just created in Section 5b
+------------------------------------------------------------------------------*/
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var Bmercury_CU;
+	tables agegrp;
+	class agegrp;
+	print nsum="SAMSIZE" mean semean lowmean upmean/style=NCHS;
+run;
+
+/*---------------------------------------------------------
+    Step 5c: Testing differences between geometric means
+----------------------------------------------------------*/
+
+/* Tests whether the geometric mean concentration of total blood mercury for 3-5 is statistically
+	different from each of the older age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var Bmercury_CU_log;
+	class agegrp;
+	contrast agegrp=(-1 1 0 0 0 0 ) / name="6-11 versus 3-5";
+	contrast agegrp=(-1 0 1 0 0 0 ) / name="12-19 versus 3-5";
+	contrast agegrp=(-1 0 0 1 0 0 ) / name="20-39 versus 3-5";
+	contrast agegrp=(-1 0 0 0 1 0 ) / name="40-59 versus 3-5";
+	contrast agegrp=(-1 0 0 0 0 1 ) / name="60-79 versus 3-5";
+	title "Step 5c: Testing differences between geometric means";
+	print t_mean p_mean;
+run;
+
+/*--------------------------------------------
+    Step 6: Percentiles
+----------------------------------------------*/
+
+/* Estimates the percentile distribution of blood total mercury across age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var Bmercury_CU;
+	PERCENTILE 95/MEDIAN QUARTILES;
+	tables agegrp;
+	class agegrp;
+	title "Step 6: Percentiles";
+	print qtile seqtile lowqtile upqtile;
+run;
+
+/*--------------------------------------------
+    Step 7 - Logistic regression
+----------------------------------------------*/
+
+proc rlogist data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	subpopn agegrp>3; * Limits the analysis to 20-79 year olds;
+	model highBPreg=age sex bmicat3 ;
+	class sex bmicat3 ;
+	reflevel sex=1 bmicat3=1 ;
+	test adjwaldf satadjf; /* produces an adjusted Wald F and Satterthwaite adjusted F test */
+	title "Step 7: Logistic regression";
+run;
+
+/*--------------------------------------------
+    Step 7b - Linear regression
+----------------------------------------------*/
+
+/*	NOTE:  in linear regression models, SUDAAN allows you to specify
+	reference groups for your categorical covariates */
+
+proc regress data=derived1 design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	model BMI=age female sleepprob;
+	class sleepprob;
+	reflevel sleepprob=1;
+	test adjwaldf satadjf;
+	title "Step 7b: Linear regression";
+run;
+
+
+/*-------------------------------------------------------------------------
+    Step 8  - Combining cycle 2 and cycle 3	environmental laboratory data
+---------------------------------------------------------------------------*/
+
+/* Note that Steps 8a to 8i were done in SAS - see SAS syntax */
+
+/* Step 8j */
+/* Check estimates of categorical variables for significant changes across cycles */
+/* Examine proportions */
+
+proc crosstab data=C2C3_weighted2 design=BRR DDF=24; * Note the extra degress of freedom;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	tables cycle*(agegroup male smoker);
+	class cycle agegroup male smoker;
+	print nsum="SAMSIZE" WSUM="POPSIZE" rowper serow lowrow uprow/WSUMFMT=F8.0;
+	title "Step 8j: Checking cycle to cycle differences in categorical variables";
+run;
+
+/* Check estimates of BCADMIUM for significant changes across cycles */
+/* Examine distribution */
+
+proc descript data=C2C3_weighted2 design=BRR DDF=24;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var BCADMIUM;
+	PERCENTILE 95/MEDIAN QUARTILES;
+	tables cycle;
+	class cycle;
+	print qtile seqtile lowqtile upqtile;
+	title "Step 8j: Checking cycle to cycle differences in percentile distribution of blood cadmium";
+run;

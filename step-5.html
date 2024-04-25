@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Step 5 | CHMS data user workshop (non-SASsy version)</title>
+  <meta name="description" content="This book contains the R code for the CHMS data user workshop." />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Step 5 | CHMS data user workshop (non-SASsy version)" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book contains the R code for the CHMS data user workshop." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Step 5 | CHMS data user workshop (non-SASsy version)" />
+  
+  <meta name="twitter:description" content="This book contains the R code for the CHMS data user workshop." />
+  
+
+<meta name="author" content="" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="step-4.html"/>
+<link rel="next" href="step-6-percentiles.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">CHMS workshop</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="" data-path="import-dependencies.html"><a href="import-dependencies.html"><i class="fa fa-check"></i>Import dependencies</a></li>
+<li class="chapter" data-level="" data-path="import-data.html"><a href="import-data.html"><i class="fa fa-check"></i>Import data</a></li>
+<li class="chapter" data-level="" data-path="step-1.html"><a href="step-1.html"><i class="fa fa-check"></i>Step 1</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-1.html"><a href="step-1.html#step-1a"><i class="fa fa-check"></i>Step 1a</a></li>
+<li class="chapter" data-level="" data-path="step-1.html"><a href="step-1.html#step-1b"><i class="fa fa-check"></i>Step 1b</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-2.html"><a href="step-2.html"><i class="fa fa-check"></i>Step 2</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-2.html"><a href="step-2.html#full-example-of-imputation-and-conversion"><i class="fa fa-check"></i>Full example of imputation and conversion</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html"><i class="fa fa-check"></i>Step 3</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#step-3a-estimate-proportions"><i class="fa fa-check"></i>Step 3a: estimate proportions</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#tests-of-association"><i class="fa fa-check"></i>Tests of association</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#first-order-correction"><i class="fa fa-check"></i>First-order correction</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#second-order-correction"><i class="fa fa-check"></i>Second-order correction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#step-3b-testing-differences-between-proportions"><i class="fa fa-check"></i>Step 3b: testing differences between proportions</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-1"><i class="fa fa-check"></i>sleepprob equals 1</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-1"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-1"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-1"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-2"><i class="fa fa-check"></i>sleepprob equals 2</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-2"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-2"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-2"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks-1"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-3"><i class="fa fa-check"></i>sleepprob equals 3</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-3"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-3"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-3"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks-2"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-4"><i class="fa fa-check"></i>sleepprob equals 4</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-4"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-4"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-4"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks-3"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html"><i class="fa fa-check"></i>Step 4</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#step-4a-estimate-arithmetic-means"><i class="fa fa-check"></i>Step 4a: estimate arithmetic means</a></li>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#step-4b-testing-differences-between-arithmetic-means"><i class="fa fa-check"></i>Step 4b: testing differences between arithmetic means</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#generalized-linear-model"><i class="fa fa-check"></i>Generalized linear model</a></li>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#wald-test"><i class="fa fa-check"></i>Wald test</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html"><i class="fa fa-check"></i>Step 5</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#step-5a-histogram"><i class="fa fa-check"></i>Step 5a: histogram</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#step-5b-estimate-geometric-mean-and-confidence-intervals"><i class="fa fa-check"></i>Step 5b: estimate geometric mean and confidence intervals</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#geometric-mean"><i class="fa fa-check"></i>Geometric mean</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#domain-analysis"><i class="fa fa-check"></i>Domain analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#step-5c-testing-differences-between-geometric-means"><i class="fa fa-check"></i>Step 5c: testing differences between geometric means</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#generalized-linear-model-1"><i class="fa fa-check"></i>Generalized linear model</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#wald-test-1"><i class="fa fa-check"></i>Wald test</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#multiple-test-correction"><i class="fa fa-check"></i>Multiple test correction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-6-percentiles.html"><a href="step-6-percentiles.html"><i class="fa fa-check"></i>Step 6: percentiles</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html"><i class="fa fa-check"></i>Step 7</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#step-7a-logistic-regression"><i class="fa fa-check"></i>Step 7a: logistic regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#response-profile"><i class="fa fa-check"></i>Response profile</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#type-3-analysis-of-effects"><i class="fa fa-check"></i>Type 3 analysis of effects</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#odds-ratio-estimates"><i class="fa fa-check"></i>Odds ratio estimates</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#association-of-predicted-probabilities-and-observed-responses"><i class="fa fa-check"></i>Association of predicted probabilities and observed responses</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#step-7b-linear-regression"><i class="fa fa-check"></i>Step 7b: linear regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#estimated-regression-coefficients"><i class="fa fa-check"></i>Estimated regression coefficients</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#tests-of-model-effects"><i class="fa fa-check"></i>Tests of model effects</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-age-sex-sleepprob"><i class="fa fa-check"></i>BMI ~ age + sex + sleepprob</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-age"><i class="fa fa-check"></i>BMI ~ age</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-sex"><i class="fa fa-check"></i>BMI ~ sex</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-sleepprob"><i class="fa fa-check"></i>BMI ~ sleepprob</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html"><i class="fa fa-check"></i>Step 8</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#steps-8a-b-combining-cycle-2-and-cycle-3-environmental-laboratory-data"><i class="fa fa-check"></i>Steps 8a-b: combining cycle 2 and cycle 3 environmental laboratory data</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#steps-8c-f-stack-cycle-2-and-cycle-3-datafiles-together-add-weights"><i class="fa fa-check"></i>Steps 8c-f: stack cycle 2 and cycle 3 datafiles together, add weights</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8g-compare-the-cycle-2-and-cycle-3-estimates-of-lab_bcd"><i class="fa fa-check"></i>Step 8g: compare the cycle 2 and cycle 3 estimates of LAB_BCD</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-2"><i class="fa fa-check"></i>Cycle indicator = 2</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-3"><i class="fa fa-check"></i>Cycle indicator = 3</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8h-change-the-values-of-lab_bcd-of-999.9-in-cycle-2-and-999.99-in-cycle-3-to-missing"><i class="fa fa-check"></i>Step 8h: change the values of LAB_BCD of 999.9 in cycle 2 and 999.99 in cycle 3 to missing</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-2-1"><i class="fa fa-check"></i>Cycle indicator = 2</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-3-1"><i class="fa fa-check"></i>Cycle indicator = 3</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#bcadmium"><i class="fa fa-check"></i>BCADMIUM</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-2-2"><i class="fa fa-check"></i>Cycle indicator = 2</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-3-2"><i class="fa fa-check"></i>Cycle indicator = 3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8i-derive-necessary-variables"><i class="fa fa-check"></i>Step 8i: derive necessary variables</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8j-assess-any-significant-changes-between-cycles"><i class="fa fa-check"></i>Step 8j: assess any significant changes between cycles</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#data-summary-5"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#variance-estimation-5"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#test-of-association"><i class="fa fa-check"></i>Test of association</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CHMS data user workshop (non-SASsy version)</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="step-5" class="section level1 hasAnchor">
+<h1>Step 5<a href="step-5.html#step-5" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="step-5a-histogram" class="section level2 hasAnchor">
+<h2>Step 5a: histogram<a href="step-5.html#step-5a-histogram" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Produces a weighted histogram of the distribution of total blood mercury concentrations across the population.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="step-5.html#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify survey design</span></span>
+<span id="cb36-2"><a href="step-5.html#cb36-2" aria-hidden="true" tabindex="-1"></a>survey_design <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb36-3"><a href="step-5.html#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb36-4"><a href="step-5.html#cb36-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">prop_weight =</span> WGT_FULL <span class="sc">/</span> <span class="fu">sum</span>(WGT_FULL)</span>
+<span id="cb36-5"><a href="step-5.html#cb36-5" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb36-6"><a href="step-5.html#cb36-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_survey_rep</span>(</span>
+<span id="cb36-7"><a href="step-5.html#cb36-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">variables =</span> Bmercury_CU,</span>
+<span id="cb36-8"><a href="step-5.html#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">weights =</span> prop_weight, </span>
+<span id="cb36-9"><a href="step-5.html#cb36-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">repweights =</span> <span class="fu">starts_with</span>(<span class="st">&quot;bsw&quot;</span>),</span>
+<span id="cb36-10"><a href="step-5.html#cb36-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">&quot;BRR&quot;</span>,</span>
+<span id="cb36-11"><a href="step-5.html#cb36-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">mse =</span> <span class="cn">TRUE</span></span>
+<span id="cb36-12"><a href="step-5.html#cb36-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-13"><a href="step-5.html#cb36-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-14"><a href="step-5.html#cb36-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Set degrees of freedom to 11 (16 sites - 5 Regions)</span></span>
+<span id="cb36-15"><a href="step-5.html#cb36-15" aria-hidden="true" tabindex="-1"></a>survey_design<span class="sc">$</span>degf <span class="ot">&lt;-</span> <span class="dv">11</span></span>
+<span id="cb36-16"><a href="step-5.html#cb36-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-17"><a href="step-5.html#cb36-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Render weighted histogram</span></span>
+<span id="cb36-18"><a href="step-5.html#cb36-18" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb36-19"><a href="step-5.html#cb36-19" aria-hidden="true" tabindex="-1"></a>  <span class="at">data =</span> survey_design<span class="sc">$</span>variables <span class="sc">%&gt;%</span> <span class="fu">na.omit</span>(),</span>
+<span id="cb36-20"><a href="step-5.html#cb36-20" aria-hidden="true" tabindex="-1"></a>  <span class="at">mapping =</span> <span class="fu">aes</span>(</span>
+<span id="cb36-21"><a href="step-5.html#cb36-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> Bmercury_CU</span>
+<span id="cb36-22"><a href="step-5.html#cb36-22" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb36-23"><a href="step-5.html#cb36-23" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span> </span>
+<span id="cb36-24"><a href="step-5.html#cb36-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(</span>
+<span id="cb36-25"><a href="step-5.html#cb36-25" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(</span>
+<span id="cb36-26"><a href="step-5.html#cb36-26" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">after_stat</span>(count <span class="sc">/</span> <span class="fu">sum</span>(count)),</span>
+<span id="cb36-27"><a href="step-5.html#cb36-27" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb36-28"><a href="step-5.html#cb36-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">binwidth =</span> <span class="fl">0.5</span>,</span>
+<span id="cb36-29"><a href="step-5.html#cb36-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">&quot;#6F7EB3&quot;</span>,</span>
+<span id="cb36-30"><a href="step-5.html#cb36-30" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">&quot;black&quot;</span></span>
+<span id="cb36-31"><a href="step-5.html#cb36-31" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb36-32"><a href="step-5.html#cb36-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(</span>
+<span id="cb36-33"><a href="step-5.html#cb36-33" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">0</span>, <span class="at">to =</span> <span class="dv">20</span>, <span class="at">by =</span> <span class="dv">1</span>)</span>
+<span id="cb36-34"><a href="step-5.html#cb36-34" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-35"><a href="step-5.html#cb36-35" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb36-36"><a href="step-5.html#cb36-36" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Histogram of blood total mercury concentrations (synthetic data)&quot;</span>,</span>
+<span id="cb36-37"><a href="step-5.html#cb36-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">&quot;Blood total mercury in ug/L - &lt; LOD has been imputed - conventional units&quot;</span>,</span>
+<span id="cb36-38"><a href="step-5.html#cb36-38" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">&quot;Relative weight sum&quot;</span></span>
+<span id="cb36-39"><a href="step-5.html#cb36-39" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb36-40"><a href="step-5.html#cb36-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="_main_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+</div>
+<div id="step-5b-estimate-geometric-mean-and-confidence-intervals" class="section level2 hasAnchor">
+<h2>Step 5b: estimate geometric mean and confidence intervals<a href="step-5.html#step-5b-estimate-geometric-mean-and-confidence-intervals" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="geometric-mean" class="section level3 hasAnchor">
+<h3>Geometric mean<a href="step-5.html#geometric-mean" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="step-5.html#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Specify survey design</span></span>
+<span id="cb37-2"><a href="step-5.html#cb37-2" aria-hidden="true" tabindex="-1"></a>survey_design <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb37-3"><a href="step-5.html#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_survey_rep</span>(</span>
+<span id="cb37-4"><a href="step-5.html#cb37-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">variables =</span> <span class="fu">c</span>(</span>
+<span id="cb37-5"><a href="step-5.html#cb37-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Bmercury_CU&quot;</span>,</span>
+<span id="cb37-6"><a href="step-5.html#cb37-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;Bmercury_CU_log&quot;</span>,</span>
+<span id="cb37-7"><a href="step-5.html#cb37-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">&quot;agegrp&quot;</span></span>
+<span id="cb37-8"><a href="step-5.html#cb37-8" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb37-9"><a href="step-5.html#cb37-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">weights =</span> WGT_FULL, </span>
+<span id="cb37-10"><a href="step-5.html#cb37-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">repweights =</span> <span class="fu">starts_with</span>(<span class="st">&quot;bsw&quot;</span>),</span>
+<span id="cb37-11"><a href="step-5.html#cb37-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">type =</span> <span class="st">&quot;BRR&quot;</span>,</span>
+<span id="cb37-12"><a href="step-5.html#cb37-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">mse =</span> <span class="cn">TRUE</span></span>
+<span id="cb37-13"><a href="step-5.html#cb37-13" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-14"><a href="step-5.html#cb37-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-15"><a href="step-5.html#cb37-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Set degrees of freedom to 11 (16 sites - 5 Regions)</span></span>
+<span id="cb37-16"><a href="step-5.html#cb37-16" aria-hidden="true" tabindex="-1"></a>survey_design<span class="sc">$</span>degf <span class="ot">&lt;-</span> <span class="dv">11</span></span>
+<span id="cb37-17"><a href="step-5.html#cb37-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-18"><a href="step-5.html#cb37-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute survey statistics</span></span>
+<span id="cb37-19"><a href="step-5.html#cb37-19" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb37-20"><a href="step-5.html#cb37-20" aria-hidden="true" tabindex="-1"></a>  stats <span class="ot">&lt;-</span> <span class="fu">svymean</span>(</span>
+<span id="cb37-21"><a href="step-5.html#cb37-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="sc">~</span> Bmercury_CU_log,</span>
+<span id="cb37-22"><a href="step-5.html#cb37-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">design =</span> survey_design, </span>
+<span id="cb37-23"><a href="step-5.html#cb37-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb37-24"><a href="step-5.html#cb37-24" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb37-25"><a href="step-5.html#cb37-25" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-26"><a href="step-5.html#cb37-26" aria-hidden="true" tabindex="-1"></a><span class="do">##                    mean     SE</span></span>
+<span id="cb37-27"><a href="step-5.html#cb37-27" aria-hidden="true" tabindex="-1"></a><span class="do">## Bmercury_CU_log 0.46022 0.0254</span></span>
+<span id="cb37-28"><a href="step-5.html#cb37-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-29"><a href="step-5.html#cb37-29" aria-hidden="true" tabindex="-1"></a><span class="co"># Export results to a csv file</span></span>
+<span id="cb37-30"><a href="step-5.html#cb37-30" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(</span>
+<span id="cb37-31"><a href="step-5.html#cb37-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> stats,</span>
+<span id="cb37-32"><a href="step-5.html#cb37-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">&quot;data/geometric-mean-Bmercury_CU_log.csv&quot;</span>,</span>
+<span id="cb37-33"><a href="step-5.html#cb37-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb37-34"><a href="step-5.html#cb37-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">na =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb37-35"><a href="step-5.html#cb37-35" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+<div id="domain-analysis" class="section level3 hasAnchor">
+<h3>Domain analysis<a href="step-5.html#domain-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="step-5.html#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute survey statistics</span></span>
+<span id="cb38-2"><a href="step-5.html#cb38-2" aria-hidden="true" tabindex="-1"></a>(</span>
+<span id="cb38-3"><a href="step-5.html#cb38-3" aria-hidden="true" tabindex="-1"></a>  hgage <span class="ot">&lt;-</span> <span class="fu">svyby</span>(</span>
+<span id="cb38-4"><a href="step-5.html#cb38-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">formula =</span> <span class="sc">~</span> Bmercury_CU <span class="sc">+</span> Bmercury_CU_log,</span>
+<span id="cb38-5"><a href="step-5.html#cb38-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">by =</span> <span class="sc">~</span> agegrp, </span>
+<span id="cb38-6"><a href="step-5.html#cb38-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">design =</span> survey_design, </span>
+<span id="cb38-7"><a href="step-5.html#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">FUN =</span> svymean, </span>
+<span id="cb38-8"><a href="step-5.html#cb38-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">vartype =</span> <span class="fu">c</span>(<span class="st">&quot;se&quot;</span>,<span class="st">&quot;cv&quot;</span>),</span>
+<span id="cb38-9"><a href="step-5.html#cb38-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">keep.var =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb38-10"><a href="step-5.html#cb38-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.rm =</span> <span class="cn">TRUE</span></span>
+<span id="cb38-11"><a href="step-5.html#cb38-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb38-12"><a href="step-5.html#cb38-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb38-13"><a href="step-5.html#cb38-13" aria-hidden="true" tabindex="-1"></a><span class="do">##   agegrp Bmercury_CU Bmercury_CU_log        se1        se2 cv.Bmercury_CU</span></span>
+<span id="cb38-14"><a href="step-5.html#cb38-14" aria-hidden="true" tabindex="-1"></a><span class="do">## 1      1    2.415222       0.2603190 0.09773800 0.05278050     0.04046750</span></span>
+<span id="cb38-15"><a href="step-5.html#cb38-15" aria-hidden="true" tabindex="-1"></a><span class="do">## 2      2    2.624472       0.3743866 0.11770421 0.05095392     0.04484872</span></span>
+<span id="cb38-16"><a href="step-5.html#cb38-16" aria-hidden="true" tabindex="-1"></a><span class="do">## 3      3    2.405474       0.3038183 0.04339746 0.02463062     0.01804113</span></span>
+<span id="cb38-17"><a href="step-5.html#cb38-17" aria-hidden="true" tabindex="-1"></a><span class="do">## 4      4    3.492874       0.5301177 0.11875332 0.02360946     0.03399874</span></span>
+<span id="cb38-18"><a href="step-5.html#cb38-18" aria-hidden="true" tabindex="-1"></a><span class="do">## 5      5    3.379534       0.4662747 0.16987404 0.06289319     0.05026552</span></span>
+<span id="cb38-19"><a href="step-5.html#cb38-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 6      6    3.394908       0.5017597 0.11806971 0.04798998     0.03477847</span></span>
+<span id="cb38-20"><a href="step-5.html#cb38-20" aria-hidden="true" tabindex="-1"></a><span class="do">##   cv.Bmercury_CU_log</span></span>
+<span id="cb38-21"><a href="step-5.html#cb38-21" aria-hidden="true" tabindex="-1"></a><span class="do">## 1         0.20275312</span></span>
+<span id="cb38-22"><a href="step-5.html#cb38-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 2         0.13609972</span></span>
+<span id="cb38-23"><a href="step-5.html#cb38-23" aria-hidden="true" tabindex="-1"></a><span class="do">## 3         0.08107025</span></span>
+<span id="cb38-24"><a href="step-5.html#cb38-24" aria-hidden="true" tabindex="-1"></a><span class="do">## 4         0.04453627</span></span>
+<span id="cb38-25"><a href="step-5.html#cb38-25" aria-hidden="true" tabindex="-1"></a><span class="do">## 5         0.13488441</span></span>
+<span id="cb38-26"><a href="step-5.html#cb38-26" aria-hidden="true" tabindex="-1"></a><span class="do">## 6         0.09564337</span></span>
+<span id="cb38-27"><a href="step-5.html#cb38-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-28"><a href="step-5.html#cb38-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Export results to a csv file</span></span>
+<span id="cb38-29"><a href="step-5.html#cb38-29" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(</span>
+<span id="cb38-30"><a href="step-5.html#cb38-30" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> hgage,</span>
+<span id="cb38-31"><a href="step-5.html#cb38-31" aria-hidden="true" tabindex="-1"></a>  <span class="at">file =</span> <span class="st">&quot;data/domain-analysis-Bmercury_CU-by-agegrp.csv&quot;</span>,</span>
+<span id="cb38-32"><a href="step-5.html#cb38-32" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb38-33"><a href="step-5.html#cb38-33" aria-hidden="true" tabindex="-1"></a>  <span class="at">na =</span> <span class="st">&quot;&quot;</span></span>
+<span id="cb38-34"><a href="step-5.html#cb38-34" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div>
+</div>
+</div>
+<div id="step-5c-testing-differences-between-geometric-means" class="section level2 hasAnchor">
+<h2>Step 5c: testing differences between geometric means<a href="step-5.html#step-5c-testing-differences-between-geometric-means" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Tests whether the geometric mean concentration of total blood mercury for 3- to 5-year-olds is statistically different from each of the older age groups.</p>
+<div id="generalized-linear-model-1" class="section level3 hasAnchor">
+<h3>Generalized linear model<a href="step-5.html#generalized-linear-model-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="step-5.html#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Re-level the agegrp factor</span></span>
+<span id="cb39-2"><a href="step-5.html#cb39-2" aria-hidden="true" tabindex="-1"></a>survey_design<span class="sc">$</span>variables<span class="sc">$</span>agegrp <span class="ot">&lt;-</span> <span class="fu">relevel</span>(</span>
+<span id="cb39-3"><a href="step-5.html#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> survey_design<span class="sc">$</span>variables<span class="sc">$</span>agegrp,</span>
+<span id="cb39-4"><a href="step-5.html#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">ref =</span> <span class="dv">1</span></span>
+<span id="cb39-5"><a href="step-5.html#cb39-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-6"><a href="step-5.html#cb39-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-7"><a href="step-5.html#cb39-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit a survey-weighted generalized linear model</span></span>
+<span id="cb39-8"><a href="step-5.html#cb39-8" aria-hidden="true" tabindex="-1"></a>hgage <span class="ot">&lt;-</span> <span class="fu">svyglm</span>(</span>
+<span id="cb39-9"><a href="step-5.html#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">formula =</span> Bmercury_CU_log <span class="sc">~</span> agegrp,</span>
+<span id="cb39-10"><a href="step-5.html#cb39-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">design =</span> <span class="fu">na.omit</span>(survey_design) <span class="sc">%&gt;%</span></span>
+<span id="cb39-11"><a href="step-5.html#cb39-11" aria-hidden="true" tabindex="-1"></a>    na.omit</span>
+<span id="cb39-12"><a href="step-5.html#cb39-12" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb39-13"><a href="step-5.html#cb39-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-14"><a href="step-5.html#cb39-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Render model summary</span></span>
+<span id="cb39-15"><a href="step-5.html#cb39-15" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(hgage)</span>
+<span id="cb39-16"><a href="step-5.html#cb39-16" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb39-17"><a href="step-5.html#cb39-17" aria-hidden="true" tabindex="-1"></a><span class="do">## Call:</span></span>
+<span id="cb39-18"><a href="step-5.html#cb39-18" aria-hidden="true" tabindex="-1"></a><span class="do">## svyglm(formula = Bmercury_CU_log ~ agegrp, design = na.omit(survey_design) %&gt;% </span></span>
+<span id="cb39-19"><a href="step-5.html#cb39-19" aria-hidden="true" tabindex="-1"></a><span class="do">##     na.omit)</span></span>
+<span id="cb39-20"><a href="step-5.html#cb39-20" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb39-21"><a href="step-5.html#cb39-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Survey design:</span></span>
+<span id="cb39-22"><a href="step-5.html#cb39-22" aria-hidden="true" tabindex="-1"></a><span class="do">## Called via srvyr</span></span>
+<span id="cb39-23"><a href="step-5.html#cb39-23" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb39-24"><a href="step-5.html#cb39-24" aria-hidden="true" tabindex="-1"></a><span class="do">## Coefficients:</span></span>
+<span id="cb39-25"><a href="step-5.html#cb39-25" aria-hidden="true" tabindex="-1"></a><span class="do">##             Estimate Std. Error t value Pr(&gt;|t|)   </span></span>
+<span id="cb39-26"><a href="step-5.html#cb39-26" aria-hidden="true" tabindex="-1"></a><span class="do">## (Intercept)  0.26032    0.05278   4.932  0.00262 **</span></span>
+<span id="cb39-27"><a href="step-5.html#cb39-27" aria-hidden="true" tabindex="-1"></a><span class="do">## agegrp2      0.11407    0.07585   1.504  0.18332   </span></span>
+<span id="cb39-28"><a href="step-5.html#cb39-28" aria-hidden="true" tabindex="-1"></a><span class="do">## agegrp3      0.04350    0.06053   0.719  0.49937   </span></span>
+<span id="cb39-29"><a href="step-5.html#cb39-29" aria-hidden="true" tabindex="-1"></a><span class="do">## agegrp4      0.26980    0.06416   4.205  0.00565 **</span></span>
+<span id="cb39-30"><a href="step-5.html#cb39-30" aria-hidden="true" tabindex="-1"></a><span class="do">## agegrp5      0.20596    0.08509   2.420  0.05183 . </span></span>
+<span id="cb39-31"><a href="step-5.html#cb39-31" aria-hidden="true" tabindex="-1"></a><span class="do">## agegrp6      0.24144    0.06591   3.663  0.01054 * </span></span>
+<span id="cb39-32"><a href="step-5.html#cb39-32" aria-hidden="true" tabindex="-1"></a><span class="do">## ---</span></span>
+<span id="cb39-33"><a href="step-5.html#cb39-33" aria-hidden="true" tabindex="-1"></a><span class="do">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span></span>
+<span id="cb39-34"><a href="step-5.html#cb39-34" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb39-35"><a href="step-5.html#cb39-35" aria-hidden="true" tabindex="-1"></a><span class="do">## (Dispersion parameter for gaussian family taken to be 9982.204)</span></span>
+<span id="cb39-36"><a href="step-5.html#cb39-36" aria-hidden="true" tabindex="-1"></a><span class="do">## </span></span>
+<span id="cb39-37"><a href="step-5.html#cb39-37" aria-hidden="true" tabindex="-1"></a><span class="do">## Number of Fisher Scoring iterations: 2</span></span></code></pre></div>
+</div>
+<div id="wald-test-1" class="section level3 hasAnchor">
+<h3>Wald test<a href="step-5.html#wald-test-1" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="step-5.html#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Render Wald test statistics</span></span>
+<span id="cb40-2"><a href="step-5.html#cb40-2" aria-hidden="true" tabindex="-1"></a><span class="fu">regTermTest</span>(</span>
+<span id="cb40-3"><a href="step-5.html#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">model =</span> hgage,</span>
+<span id="cb40-4"><a href="step-5.html#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">test.terms =</span> <span class="sc">~</span> agegrp,</span>
+<span id="cb40-5"><a href="step-5.html#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">df =</span> <span class="dv">11</span></span>
+<span id="cb40-6"><a href="step-5.html#cb40-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-7"><a href="step-5.html#cb40-7" aria-hidden="true" tabindex="-1"></a><span class="do">## Wald test for agegrp</span></span>
+<span id="cb40-8"><a href="step-5.html#cb40-8" aria-hidden="true" tabindex="-1"></a><span class="do">##  in svyglm(formula = Bmercury_CU_log ~ agegrp, design = na.omit(survey_design) %&gt;% </span></span>
+<span id="cb40-9"><a href="step-5.html#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="do">##     na.omit)</span></span>
+<span id="cb40-10"><a href="step-5.html#cb40-10" aria-hidden="true" tabindex="-1"></a><span class="do">## F =  18.93811  on  5  and  11  df: p= 4.5187e-05</span></span></code></pre></div>
+</div>
+<div id="multiple-test-correction" class="section level3 hasAnchor">
+<h3>Multiple test correction<a href="step-5.html#multiple-test-correction" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="step-5.html#cb41-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-2"><a href="step-5.html#cb41-2" aria-hidden="true" tabindex="-1"></a><span class="co"># False discovery rate, the expected proportion of false discoveries among the rejected hypotheses.</span></span>
+<span id="cb41-3"><a href="step-5.html#cb41-3" aria-hidden="true" tabindex="-1"></a><span class="co"># The false discovery rate is a less stringent condition than the family-wise error rate, so these methods are more powerful than the others.</span></span>
+<span id="cb41-4"><a href="step-5.html#cb41-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-5"><a href="step-5.html#cb41-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a vector of coefficients</span></span>
+<span id="cb41-6"><a href="step-5.html#cb41-6" aria-hidden="true" tabindex="-1"></a>coefficients <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(<span class="fu">coef</span>(<span class="fu">summary</span>(hgage))) <span class="sc">%&gt;%</span></span>
+<span id="cb41-7"><a href="step-5.html#cb41-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">Pr(&gt;|t|)</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb41-8"><a href="step-5.html#cb41-8" aria-hidden="true" tabindex="-1"></a>  unlist</span>
+<span id="cb41-9"><a href="step-5.html#cb41-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-10"><a href="step-5.html#cb41-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Add names to coefficients</span></span>
+<span id="cb41-11"><a href="step-5.html#cb41-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(coefficients) <span class="ot">&lt;-</span> <span class="fu">names</span>(hgage<span class="sc">$</span>coefficients)</span>
+<span id="cb41-12"><a href="step-5.html#cb41-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb41-13"><a href="step-5.html#cb41-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Render adjusted p-values</span></span>
+<span id="cb41-14"><a href="step-5.html#cb41-14" aria-hidden="true" tabindex="-1"></a><span class="fu">p.adjust</span>(</span>
+<span id="cb41-15"><a href="step-5.html#cb41-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">p =</span> coefficients[<span class="sc">-</span><span class="dv">1</span>], </span>
+<span id="cb41-16"><a href="step-5.html#cb41-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">method =</span> <span class="st">&quot;fdr&quot;</span></span>
+<span id="cb41-17"><a href="step-5.html#cb41-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb41-18"><a href="step-5.html#cb41-18" aria-hidden="true" tabindex="-1"></a><span class="do">##    agegrp2    agegrp3    agegrp4    agegrp5    agegrp6 </span></span>
+<span id="cb41-19"><a href="step-5.html#cb41-19" aria-hidden="true" tabindex="-1"></a><span class="do">## 0.22915118 0.49936871 0.02635124 0.08638865 0.02635124</span></span></code></pre></div>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="step-4.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="step-6-percentiles.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

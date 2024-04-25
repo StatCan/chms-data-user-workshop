@@ -1,0 +1,1353 @@
+
+/* SAS/STATA/SUDAAN syntax used to generate the estimates presented at the "Using CHMS data" 
+	workshop
+
+
+	Note that all of the various data and weight files are synthetic (i.e. fake data).
+
+	Files names for SAS synthetic files:
+		- Cycle 2 full data file = CYCLE2_SYNTHETIC
+		- Cycle 2 full Bootstrap weight file = BOOTSTRAP_SYNTHETIC_C2
+		- Cycle 3 full household data file = CYCLE3_HHD_SYNTHETIC
+		- Cycle 3 full clinic data file = CYCLE3_CLC_SYNTHETIC
+		- Cycle 3 full environmental laboratory data file = CYCLE3_EL_SYNTHETIC
+		- Cycle 3 full Bootstrap weight file = BOOTSTRAP_SYNTHETIC_C3
+		- Cycle 3 fasted data file = CYCLE3_FASTED_SYNTHETIC
+		- Cycle 3 fasted Bootstrap weighteep file = BOOTSTRAP_SYNTHETIC_FASTED_C3
+		- Combined cycle 2 + cycle 3 Bootstrap weight file = BOOTSTRAP_SYNTHETIC_C2C3 
+
+	Files names for STATA synthetic files:
+		- derived_stata_file1.dta
+		- step_8_file.dta
+
+/******************************************************************************/
+
+/* Location of all synthetic files */
+
+libname dummy "insert pathname to files";
+
+
+
+/*------------------------------------------------------------------------------------
+    Step 1a: Create dataset that includes all variables from the Fasted sub-sample data
+    file, the Fasted sub-sample bootstrap weights and also the age, sex and BMI variables
+    from the full sample clinic file for respondents that were part of the Fasted sub-sample.
+--------------------------------------------------------------------------------------*/
+
+/* Create temporary data set from Fasted sub-sample data file and sort it */
+data C3_FASTED;
+	set dummy.Cycle3_fasted_synthetic;
+run;
+
+proc sort data=C3_FASTED;
+	by CLINICID;
+run;
+
+/* Create temporary data set from Fasted sub-sample bootstrap weight file and sort it */
+data C3_FASTED_bsw;
+	set dummy.Bootstrap_synthetic_fasted_c3;
+run;
+
+proc sort data=C3_FASTED_bsw;
+	by CLINICID;
+run;
+
+/* Create temporary data set from full sample clinic data, sort it and only keep the required variables */
+data C3_clc;
+	set dummy.Cycle3_clc_synthetic;
+	keep CLINICID CLC_SEX CLC_AGE HWMDBMIA;
+run;
+
+proc sort data=C3_clc;
+	by CLINICID;
+run;
+
+/* Merge Fasted sub-sample data with Fasted sub-sample bootstrap weights and also with the
+	full sample clinic data file.  Keep only the cases that are on the sub-sample files! */
+data FASTED_final;
+	merge C3_FASTED(in=a) C3_FASTED_bsw(in=b) C3_clc;
+	by CLINICID;
+	if a and b then output; * This IF statement will keep only records that are on both the C3_FASTED AND C3_FASTED_bsw files;
+run;
+
+
+
+
+
+
+
+/*--------------------------------------------------------------------------------------
+    Step 1b: Create dataset that includes all variables from the full sample household,
+	clinic and environmental lab files and the full sample bootstrap weights
+----------------------------------------------------------------------------------------*/
+
+/* Create temporary data set from full sample household data and sort it */
+data C3_hhd_full;
+	set dummy.Cycle3_hhd_synthetic;
+run;
+
+proc sort data=C3_hhd_full;
+	by CLINICID;
+run;
+
+/* Create temporary data set from full sample clinic data and sort it */
+data C3_clc_full;
+	set dummy.Cycle3_clc_synthetic;
+run;
+
+proc sort data=C3_clc_full;
+	by CLINICID;
+run;
+
+/* Create temporary data set from full sample lab data and sort it (EL = environmental lab) */
+data C3_el_full;
+	set dummy.Cycle3_el_synthetic;
+run;
+
+proc sort data=C3_el_full;
+	by CLINICID;
+run;
+
+/* Create temporary dataset from full sample bootstrap weight file and sort it */
+data C3_bsw_full;
+	set dummy.Bootstrap_synthetic_c3;
+run;
+
+proc sort data=C3_bsw_full;
+	by CLINICID;
+run;
+
+/* Merge full sample data with full sample bootstrap weights */
+data C3_full_with_bsw;
+	merge C3_hhd_full(in=aa) C3_clc_full(in=bb) C3_el_full(in=cc) C3_bsw_full(in=dd);
+	by CLINICID;
+	if aa and bb and cc and dd then output; * This IF statement will keep only the records whose CLINICIDs appear onall 4 files being merged;
+run;
+
+
+
+
+
+
+
+/*-----------------------------------------------------------------
+    Step 2: Create derived variables used in the hands-on examples 
+-------------------------------------------------------------------*/
+
+data derived;
+  	set C3_full_with_bsw;
+
+/**********************************************/
+/***	DERIVE VARIABLES					***/
+/***	- non-response to missing			***/
+/***	- collapse categories				***/
+/***	- create categories from continuous	***/
+/***	- combine responses					***/
+/**********************************************/
+
+/* All respondents */
+	agegrp=.;
+	label agegrp="Age group at clinic visit";
+		if  3<=clc_age<=5 then agegrp=1;	* ages  3-5;
+		if  6<=clc_age<=11 then agegrp=2;	* ages  6-11;
+  		if 12<=clc_age<=19 then agegrp=3;	* ages 12-19;
+  		if 20<=clc_age<=39 then agegrp=4;	* ages 20-39;
+  		if 40<=clc_age<=59 then agegrp=5;	* ages 40-59;
+  		if 60<=clc_age<=80 then agegrp=6;	* ages 60-79;  
+
+/* Respondents aged 6 or older */
+Hsys=.;
+Hdias=.; 
+	if 140 <= BPMDPBPS < 996 then Hsys=1;
+	else if 0 <= BPMDPBPS < 140 then Hsys=2;
+	if 90 <= BPMDPBPD < 996 then Hdias=1;
+	else if 0 <= BPMDPBPD < 90 then Hdias=2;
+
+/* Respondents aged 6 or older */
+label highBP="1 high blood pressure; 2 not high blood pressure";
+highBP=2;
+	if (Hsys=1 or Hdias=1) or CCC_32=1 then highBP=1; /* measured high BP or reported taking BP medication in past month */
+	else if Hsys=. and Hdias=. or CCC_32=. then highBP=.;
+
+/* Note that for logistic regression in SUDAAN, the dichotomous outcome variable must have a value of 1 or 0 */
+
+/* Respondents aged 6 or older */
+highBPreg=.;
+	label highBPreg="Blood pressure: 1 high; 0 not high";
+  	if highBP=1 then highBPreg=1; 
+  		else if highBP=2 then highBPreg=0; 
+
+/* All respondents excluding pregnant females */
+	BMI=.;
+	label BMI="Measured BMI";
+	if HWMDBMI<99.96 then BMI=HWMDBMI;
+
+/* Adult respondents excluding pregnant females */
+	BMIcat3 = .;
+	label BMIcat3="Adult BMI categories: 1 Neither overweight nor obese; 2 Overweight 3 Obese"; 
+	if 20 <= clc_age <= 80 then do;
+		if HWMDBMIA in (1,2) then BMIcat3=1;			* Neither overwgt nor obese ;
+		else if HWMDBMIA=3 then BMIcat3=2;				* Overweight;
+		else if HWMDBMIA in (4,5,6) then BMIcat3=3;		* Obese;
+	end;
+
+/* All respondents */
+	sex=.;
+	label sex="1 male; 2 female";
+	sex=clc_sex;
+
+/* All respondents */
+	sleepprob=.;
+	label sleepprob="Trouble going to/staying asleep: 1 never/rarely; 2 sometimes; 3 most; 4 all the time";
+	if 1<=slp_12<=2 then sleepprob=1;
+		else if slp_12=3 then sleepprob=2;
+		else if slp_12=4 then sleepprob=3;
+		else if slp_12=5 then sleepprob=4;
+
+
+/* All respondents */
+	sleephrs=.;
+	label sleephrs="Number of hours of sleep in 24 hr period";
+	if slp_11<99.7 then sleephrs=slp_11;
+
+
+/* All respondents */
+	age=.;
+	label age="Age at clinic visit";
+	age=clc_age;
+
+
+
+
+/*************************************************************************/
+/* FULL EXAMPLE OF IMPUTATION AND CONVERSION			 				 */
+/*																		 */
+/*	STEP A: Convert all 95s to one half of the LOD values				 */
+/*	STEP B: Convert the reserve codes equal to "valid skip" or 			 */
+/*			"not stated" to blanks 										 */
+/*	STEP C: Convert all values to conventional units					 */
+/*	STEP D: Get the natural log of the conventional units */
+/*************************************************************************/
+
+/****************/
+/* STEP A and B */
+/****************/
+
+	Bmercury=.;
+	label Bmercury="Blood total mercury in nmol/L (SI units) < LOD imputed";
+	if LAB_BHG=999.5 then Bmercury=2.1/2; * The LOD of blood total mercury is 2.1 in cycle 3;
+		else if LAB_BHG>999.5 then Bmercury=.; * This sets all other cases with non-response codes to missing; 
+		else if 0<LAB_BHG<999.5 then Bmercury=LAB_BHG;
+
+/****************/
+/* STEP C		*/
+/****************/
+	Bmercury_CU=.;
+	label Bmercury_CU="Blood total mercury in ug/L - < LOD has been imputed - Conventional units";
+	Bmercury_CU=Bmercury*0.2006;
+
+/****************/
+/* STEP D		*/
+/****************/
+	Bmercury_CU_log=.;
+	label Bmercury_CU_log="Natural log of Blood total mercury in ug/L - < LOD has been imputed - Conventional units";
+	Bmercury_CU_log=log(Bmercury_CU);
+
+
+	keep CLINICID WGT_FULL BSW1-BSW500 agegrp highBP BMIcat3 sex sleepprob sleephrs
+		age BMI highBPreg Bmercury Bmercury_CU Bmercury_CU_log;
+
+run;
+
+/****************************************************************************/
+/*	During the workshop, all examples will be run using SAS.  For reference	*/
+/*	purposes, STATA syntax and SUDAAN syntax for the examples have been		*/
+/* 	provided at the bottom of this program.									*/
+/****************************************************************************/
+
+
+
+
+/*--------------------------------------------
+    Step 3a:  Estimate proportions
+----------------------------------------------*/
+
+/* Estimates the distribution of sleeping trouble across sex */
+proc surveyfreq data=derived varmethod=brr;
+	tables sex*sleepprob/row cl(type=logit) cv lrchisq(secondorder) nototal nocellpercent;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 3a: Estimate proportions";
+run;
+
+/* NOTE: by specifying the lrchisq(secondorder) option, proc surveyfreq provides a second-order (Satterthwaite)
+	likelihood ratio chi-square test */
+
+
+
+
+/*-----------------------------------------------------
+    Step 3b:  Testing differences between proportions
+------------------------------------------------------*/
+
+/* Tests the difference in proportions between males and females for each category of sleeping trouble */
+
+/* NOTE: SAS surveyfreq will test risk differences for two by two tables only; therefore the categories of 
+	sleepprob need to be dummy coded into binary variables before testing for risk differences across sex */
+
+data testprop;
+	set derived;
+	if sleepprob ne . then do;
+		if sleepprob=1 then sleepprob1=1; else sleepprob1=2;
+		if sleepprob=2 then sleepprob2=1; else sleepprob2=2;
+		if sleepprob=3 then sleepprob3=1; else sleepprob3=2;
+		if sleepprob=4 then sleepprob4=1; else sleepprob4=2;
+	end;
+run; 
+
+proc surveyfreq data=testprop varmethod=brr;
+	tables sex*sleepprob1/nofreq nocellpercent row risk1 alpha=.05;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 3b: Sleepprob=1, test difference between male and female";
+run;
+
+proc surveyfreq data=testprop varmethod=brr;
+	tables sex*sleepprob2/nofreq nocellpercent row risk1 alpha=.05;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 3b: Sleepprob=2, test difference between male and female";
+run;
+
+proc surveyfreq data=testprop varmethod=brr;
+	tables sex*sleepprob3/nofreq nocellpercent row risk1 alpha=.05;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 3b: Sleepprob=3, test difference between male and female";
+run;
+
+proc surveyfreq data=testprop varmethod=brr;
+	tables sex*sleepprob4/nofreq nocellpercent row risk1 alpha=.05;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 3b: Sleepprob=4, test difference between male and female";
+run;
+
+
+
+
+/*--------------------------------------------
+    Step 4a: Estimate arithmetic means
+----------------------------------------------*/
+
+/* Estimates the average number of hours spent sleeping across age groups */
+
+proc surveymeans data=derived varmethod=brr MEAN CLM CV NOBS;                                     
+	var sleephrs;
+	domain agegrp;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 4a: Estimate arithmetic means";
+run;
+
+
+
+
+/*---------------------------------------------------------
+    Step 4b: Testing differences between arithmetic means
+----------------------------------------------------------*/
+
+/* Tests whether the average number of hours spent sleeping by 6-11 year olds is statistically
+	different from that of each of the other age groups */
+
+proc surveyreg data=derived varmethod=brr;
+	class agegrp;
+	model sleephrs=agegrp;
+	lsmeans agegrp/ diff=control("2"); /* Indicates that the estimate for age group category 2 (6-11 yrs)
+										is the estimate against which all other age group estimates will be 
+										tested */
+										
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 4b: Testing differences between arithmetic means"; /* SAS has the edge on SUDAAN 
+					because it outputs the means as well as the test results */
+run;
+
+
+
+
+/*--------------------------------------------
+    Step 5a: Histogram
+----------------------------------------------*/
+
+/* Produces a weighted histogram of the distribution of total blood mercury concentrations across the population */
+
+data derived1;
+	set derived;
+	relwt=wgt_full/31410000; * Relative weight based on sum of survey weights for 3-79 sample;
+run;
+
+
+proc gchart data=derived1;
+	vbar Bmercury_CU/midpoints=0 to 20 by .5 sumvar=relwt space=0;
+	title "Histogram of blood total mercury concentrations (synthetic data)";
+run;
+quit;
+
+
+
+
+/*------------------------------------------------------------
+    Step 5b: Estimate geometric mean and confidence intervals 
+-------------------------------------------------------------*/
+
+/*  Note that when the variance estimation involves replicate weighting methods such as BRR,
+	the results are the same whether you use a DOMAIN statement or sort the data and use a BY statement. 
+	Martin, K "Analyzing data from complex samples using PROC SURVEYFREQ in SAS 9.2" */
+
+/* SAS 9.4 can estimate geometric means, their standard errors and 
+	appropriate confidence limits */
+
+proc surveymeans data=derived varmethod=brr GEOMEAN GMCLM NOBS;                                     
+	var Bmercury_CU;
+	domain agegrp;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	ODS output geometricmeans=Bmercury_geo;
+	ODS output domaingeomeans=Bmercury_geoD;
+	title "Geomean and CLs for blood mercury";
+run;
+
+/* for users of SAS 9.3 or earlier, there are more steps required to 
+	estimate a geometric mean and its confidence limits.  First, it is necessary
+	to estimate the mean and the confidence limits of the natural LOG of the variable; 
+	second, output them to a dataset, and third, exponentiate the values in the
+	output dataset. These steps are shown below.
+
+proc surveymeans data=derived varmethod=brr MEAN CLM NOBS;                                     
+	var Bmercury_CU_log;
+	domain agegrp;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	ODS output domain=Bmercury_geo;
+	title "Mean and CLs for natural log of blood mercury";
+run;
+
+data Bmercury_geo_1; 
+	retain DomainLabel agegrp VarName VarLabel N Mean LowerCLMean UpperCLMean; * re-order the variables;
+	set Bmercury_geo;
+	Mean = exp(Mean);
+	LowerCLMean=exp(LowerCLMean);
+	UpperCLMean=exp(UpperCLMean);
+	label Mean="Geometric Mean"
+	LowerCLMean="Lower 95% Confidence Limit of geomean"
+	UpperCLMean="Upper 95% Confidence Limit of geomean";
+	drop StdErr;
+run;
+
+proc print data=Bmercury_geo_1 (keep=DomainLabel agegrp N Mean LowerCLMean UpperCLMean); 
+	title "Geometric mean and CLs for blood mercury";
+run;
+*/
+
+
+
+
+
+
+/*----------------------------------------------------------------------------
+   Estimate arithmetic mean and confidence intervals for comparison purposes 
+   with the geometric mean just created in Section 5b
+------------------------------------------------------------------------------*/
+
+/*  Note that when the variance estimation involves replicate weighting methods such as BRR,
+	the results are the same whether you use a DOMAIN statement or sort the data and use a BY statement. 
+	Martin, K "Analyzing data from complex samples using PROC SURVEYFREQ in SAS 9.2" */
+
+proc surveymeans data=derived varmethod=brr MEAN CLM CV NOBS;                                     
+	var Bmercury_CU;
+	domain agegrp;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Arithmetic mean and CLs for blood mercury";
+run;
+
+proc sort data=derived;
+	by agegrp;
+run;
+
+proc surveymeans data=derived varmethod=brr MEAN CLM CV NOBS;                                     
+	var Bmercury_CU;
+	by agegrp;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Arithmetic mean and CLs for blood mercury";
+run;
+
+/* the standard error of the mean is the same, whether a DOMAIN or a PROC SORT/BY statement is used */
+
+
+/*---------------------------------------------------------
+    Step 5c: Testing differences between geometric means
+----------------------------------------------------------*/
+
+/* Tests whether the geometric mean concentration of total blood mercury for 3-5 is statistically
+	different from each of the older age groups */
+
+proc surveyreg data=derived varmethod=brr;
+	class agegrp;
+	model Bmercury_CU_log=agegrp;
+	lsmeans agegrp/ diff=control("1") alpha=0.05; /* control("1") indicates that the estimate for age group category 1 (3-5 yrs)
+										is the estimate against which all other age group estimates will be 
+										tested */
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 5c: Testing differences between geometric means";
+run;
+
+/* With Bonferroni adjustment: This test is identical to the one above except that 	
+	alpha = 0.05/5 = 0.01 is specified. The default above is 0.05. */
+proc surveyreg data=derived varmethod=brr;
+	class agegrp;
+	model Bmercury_CU_log=agegrp;
+	lsmeans agegrp/ diff=control("1") alpha=0.01; 
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 5c: Testing differences between geometric means";
+run;
+
+
+
+
+
+/*--------------------------------------------
+    Step 6: Percentiles
+----------------------------------------------*/
+
+/* Estimates the percentile distribution of blood total mercury across age groups */
+
+/* SAS - version 9.3 only */
+/*	NOTE: you need to sort your file and use a BY statement rather than a DOMAIN statement to generate 
+	percentiles by age group*/
+/*  SAS will not generate percentiles if a DOMAIN statement is used */
+
+proc sort data=derived; by agegrp; run;
+
+proc surveymeans data=derived varmethod=brr percentile=(25 50 75 95);                                                                         
+	var Bmercury_CU;
+	by agegrp;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	ODS output Quantiles=results_for_mercury_SAS;
+	title "Step 6: Percentiles";
+run;
+
+/* Create one table for each quantile and then print them out. */
+data P25 P50 P75 P95;
+	set results_for_mercury_SAS (keep=agegrp Quantile Estimate StdErr LowerCL UpperCL);
+	if Quantile = 0.25 then output P25;
+		else if Quantile = 0.50 then output P50;
+		else if Quantile = 0.75 then output P75;
+		else if Quantile = 0.95 then output P95;
+run;
+
+proc print data=P25 (drop=Quantile) noobs; title '25th Percentile of Blood Mercury by Age Group'; run;
+proc print data=P50 (drop=Quantile) noobs; title '50th Percentile of Blood Mercury by Age Group'; run;
+proc print data=P75 (drop=Quantile) noobs; title '75th Percentile of Blood Mercury by Age Group'; run;
+proc print data=P95 (drop=Quantile) noobs; title '95th Percentile of Blood Mercury by Age Group'; run;
+	
+/* Alternatively, create one table for each age group and then print them out. */
+data Age3_5 Age6_11 Age12_19 Age20_39 Age40_59 Age60_79;
+	set results_for_mercury_SAS (keep=agegrp Quantile Estimate StdErr LowerCL UpperCL);
+	if agegrp = 1 then output Age3_5;
+		else if agegrp = 2 then output Age6_11;
+		else if agegrp = 3 then output Age12_19;
+		else if agegrp = 4 then output Age20_39;
+		else if agegrp = 5 then output Age40_59;
+		else if agegrp = 6 then output Age60_79;
+run;
+
+proc print data=Age3_5 (drop=agegrp) noobs; title 'Quantiles of Blood Mercury for 3-5 year olds'; run;
+proc print data=Age6_11 (drop=agegrp) noobs; title 'Quantiles of Blood Mercury for 6-11 year olds'; run;
+proc print data=Age12_19 (drop=agegrp) noobs; title 'Quantiles of Blood Mercury for 12-19 year olds'; run;
+proc print data=Age20_39 (drop=agegrp) noobs; title 'Quantiles of Blood Mercury for 20-39 year olds'; run;
+proc print data=Age40_59 (drop=agegrp) noobs; title 'Quantiles of Blood Mercury for 40-59 year olds'; run;
+proc print data=Age60_79 (drop=agegrp) noobs; title 'Quantiles of Blood Mercury for 60-79 year olds'; run;
+
+	
+
+/*--------------------------------------------
+    Step 7a - Logistic regression
+----------------------------------------------*/
+
+proc surveylogistic data=derived varmethod=brr;
+	where agegrp>3;
+	class sex (ref="1") bmicat3 (ref="1") /param=ref;
+   	model highBPreg(event="1")=age sex bmicat3 /link=logit;
+    weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 7a: Logistic regression";
+run;   
+title;
+
+
+
+
+/*--------------------------------------------
+    Step 7b - Linear regression
+----------------------------------------------*/
+
+/*	NOTE: SURVEYREG in SAS does not allow you to specify reference groups
+	for your categorical covariates. It automatically assumes that the category
+	with the HIGHEST numeric value is the reference group.  Therefore, one option is
+	to code your categorical covariates so that the intended reference group has the
+	HIGHEST numeric value.  Other options include using formats or ordering your dataset
+	prior to running the regression model. */
+
+
+proc surveyreg data=derived varmethod=brr;
+	where agegrp>3;
+	class sex sleepprob;
+	model BMI=age sex sleepprob / solution;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=11;
+	title "Step 7b: Linear regression: ref levels default to highest value";
+run;
+
+
+/*-------------------------------------------------------------------------
+    Step 8  - Combining cycle 2 and cycle 3	environmental laboratory data
+---------------------------------------------------------------------------*/
+
+/*  Step 8a: Read in cycle 2 data keeping only the necessary variables for analysis
+		   : Create a "cycle" variable to indicate that the records belong to cycle 2		
+		   : Copy the C2 weight into a new variable called "weight_full"			*/
+
+data cycle2;
+	set dummy.Cycle2_synthetic;
+	label cycle="Cycle indicator";
+	label weight_full="Full sample single cycle weight";
+	cycle=2;
+	weight_full=wgt_full;
+	keep CLINICID cycle weight_full clc_age clc_sex LAB_BCD SMK_12;
+	title "";
+run;
+
+
+/*  Step 8b: Read in cycle 3 data keeping only the necessary variables for analysis
+		   : Create a "cycle" variable to indicate that the records belong to cycle 3		
+		   : Copy the C3 weight into a new variable called "weight_full"			*/
+
+data C3_hhd;
+	set dummy.Cycle3_hhd_synthetic;
+	keep CLINICID wgt_full SMK_12;
+run;
+
+data C3_clc;
+	set dummy.Cycle3_clc_synthetic;
+	keep CLINICID clc_age clc_sex;
+run;
+
+data C3_el;
+	set dummy.Cycle3_el_synthetic;
+	keep CLINICID LAB_BCD;
+run;
+
+proc sort data=C3_hhd;
+	by CLINICID;
+run;
+
+proc sort data=C3_clc;
+	by CLINICID;
+run;
+
+proc sort data=C3_el;
+	by CLINICID;
+run;
+
+data c3_both;
+	merge C3_hhd(in=aa) C3_clc(in=bb) C3_el(in=cc);
+	by CLINICID;
+	if aa and bb and cc then output;
+run;
+
+data cycle3;
+	set C3_both;
+	label cycle="Cycle indicator";
+	label weight_full="Full sample single cycle weight";
+	cycle=3;
+	weight_full=wgt_full;
+	keep CLINICID cycle weight_full clc_age clc_sex LAB_BCD SMK_12;
+run;
+
+
+/*  Step 8c: Stack cycle 2 and cycle 3 datafiles together	*/
+
+data cycle2_3;
+	set cycle3 cycle2; /* The order is important if the variable has a different number of decimal places in the cycles being combined! */
+run;
+
+
+/*  Step 8d: Read in the combined C2-C3 weight file	*/
+
+data C2C3weights;
+	set dummy.Bootstrap_synthetic_c2_c3;
+run;
+
+
+/*  Step 8e: Sort the combined C2-C3 data file and the combined C2_C3 weight file by CLINICID	*/
+
+proc sort data=cycle2_3;
+	by CLINICID;
+run;
+
+proc sort data=C2C3weights;
+	by CLINICID;
+run;
+
+
+/*  Step 8f: Merge the two files by CLINICID to create the analytical file "C2C3_weighted". */
+
+data C2C3_weighted;
+	merge cycle2_3(in=aa) C2C3weights(in=bb);
+	by CLINICID;
+	if aa & bb then output C2C3_weighted;
+run;
+
+
+/*  NOTE: All records are accounted for when cycle 2 and cycle 3 data are merged with the C2-C3 combined weight file
+	because both cycles	collected information from people aged 3 to 79.  In contrast, any combined weight
+	file that includes cycle 1 automatically excludes records for people aged 3 to 5, because this age group
+	was not included in cycle 1. */
+
+
+/*  Step 8g: Compare the cycle 2 and cycle 3 estimates of LAB_BCD 
+		   : Check the reserve codes
+		   : Check the LODs for LAB_BCD */		
+
+/* Using SAS */
+proc sort data=C2C3_weighted;
+	by cycle;
+run;
+
+options pagesize=50;
+
+proc freq data=C2C3_weighted;
+	by cycle;
+	tables LAB_BCD/list;
+	title "Step 8g: Comparing LAB_BCD across cycles";
+run;
+
+
+/*  Step 8h: Change the values of LAB_BCD of 999.9 in cycle 2 and 999.99 in cycle 3 to missing
+		   : Changes the values of LAB_BCD of 999.5 in cycle 3 and 999.95 in cycle 3 to LOD/2
+				LODs for LAB_BCD: Cycle 2=0.4; Cycle 3=0.71 
+		   	 	Because cycle 3 has the highest LOD, a conservative approach is to consider this as the LOD for the combined 
+				C2-C3 dataset. This means that all records with a reserve code ending in "5" will be assigned the value 0.71/2.  
+			 	Further, some cycle 2 records have valid values less than 0.71 (455 records in total, using the synthetic data
+				file) and these also will be changed to 0.71/2 . 																			*/
+
+data C2C3_weighted1;
+	set C2C3_weighted;
+	label BCADMIUM="Blood cadmium in nmol\L";
+	BCADMIUM=.;
+	if cycle=2 then do;
+		if LAB_BCD=999.9 then BCADMIUM=.;
+			else if LAB_BCD=999.5 or LAB_BCD<0.71 then BCADMIUM=0.71/2;
+			else if 0<=LAB_BCD<999.5 then BCADMIUM=LAB_BCD;
+	end;
+	else if cycle=3 then do;
+		if LAB_BCD=999.99 then BCADMIUM=.;
+			else if LAB_BCD=999.95 then BCADMIUM=0.71/2;
+			else if LAB_BCD<999.95 then BCADMIUM=LAB_BCD;
+	end;
+run;
+
+/* Verify that recode worked properly */
+
+proc summary data=C2C3_weighted1 nway missing;
+	class cycle BCADMIUM LAB_BCD;
+	output out=test;
+run;
+proc print data=test;
+title "Step 8h: Verifying recode";
+run;
+	
+
+/*  Step 8i: Derive necessary variables	*/
+		   
+data C2C3_weighted2;
+	set C2C3_weighted1;
+
+	label agegroup="1 6-11; 2 12-19; 3 20-39; 4 40-69; 5 60-79";
+
+  	if  6<=clc_age<=11 then agegroup=1;	* Ages  6-11*;
+  	if 12<=clc_age<=19 then agegroup=2;	* Ages 12-19*;
+  	if 20<=clc_age<=39 then agegroup=3;	* Ages 20-39*;
+ 	if 40<=clc_age<=59 then agegroup=4;	* Ages 40-59*;
+  	if 60<=clc_age<=80 then agegroup=5;	* Ages 60-79*;   /* A respondent turned 80 between the household and clinic visit and we want to keep him/her */
+
+	label male="Respondent is male";
+	male=0;
+	if clc_sex=1 then male=1;
+
+	label smoker="Smoker 1 daily or occasional; 0 nonsmoker; - age 12 and over";
+	if SMK_12 in (1,2) then smoker=1;
+		else if SMK_12=3 then smoker=0;
+
+run;
+
+
+/* Delete extra datasets */
+proc datasets nolist nodetails;
+	delete C2C3_weighted1;
+quit;
+run;
+
+/*  Step 8j: Assess any significant changes between cycles	*/
+
+/* Check estimates of categorical variables for significant changes across cycles */
+/* Examine proportions */
+
+proc surveyfreq data=C2C3_weighted2 varmethod=brr;
+	tables cycle*(agegroup male smoker)/row cl(type=logit) cv NOCELLPERCENT NOSTD NOWT;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=24;
+	title "Step 8j: Checking cycle to cycle differences in categorical variables";
+run;
+
+
+/* Check estimates of BCADMIUM for significant changes across cycles */
+/* Examine distribution */
+
+/* SAS - version 9.3 only */
+/*	NOTE: you need to sort your file and use a BY statement rather than a DOMAIN statement to generate percentiles by age group*/
+/*  because SAS will not generate percentiles if a DOMAIN statement is used */
+proc sort data=C2C3_weighted2; by cycle; run;
+
+proc surveymeans data=C2C3_weighted2 varmethod=brr percentile=(25 50 75 95);                                                                         
+	var BCADMIUM;
+	weight wgt_full;
+	repweight bsw1-bsw500/df=24;
+	by cycle;
+	title "Step 8j: Checking cycle to cycle differences in percentile distribution of blood cadmium";
+	ODS output Quantiles=results_for_C2C3_SAS;
+run;
+
+/* Create one table for each quantile and then print them out. */
+data P25 P50 P75 P95;
+	set results_for_C2C3_SAS (keep=cycle Quantile Estimate StdErr LowerCL UpperCL);
+	if Quantile = 0.25 then output P25;
+		else if Quantile = 0.50 then output P50;
+		else if Quantile = 0.75 then output P75;
+		else if Quantile = 0.95 then output P95;
+run;
+
+proc print data=P25 (drop=Quantile) noobs; title '25th Percentile of Blood Cadmium by Cycle'; run;
+proc print data=P50 (drop=Quantile) noobs; title '50th Percentile of Blood Cadmium by Cycle'; run;
+proc print data=P75 (drop=Quantile) noobs; title '75th Percentile of Blood Cadmium by Cycle'; run;
+proc print data=P95 (drop=Quantile) noobs; title '95th Percentile of Blood Cadmium by Cycle'; run;
+
+/* Create one table for each cycle and then print them out. */
+data C2_bcadmium C3_bcadmium;
+	set results_for_C2C3_SAS (keep=cycle Quantile Estimate StdErr LowerCL UpperCL);
+	if cycle = 2 then output C2_bcadmium;
+		else if cycle = 3 then output C3_bcadmium;
+run;
+
+proc print data=C2_bcadmium (drop=cycle) noobs; title 'Quantiles of Blood Cadmium in C2'; run;
+proc print data=C3_bcadmium (drop=cycle) noobs; title 'Quantiles of Blood Cadmium in C3'; run;
+
+
+
+
+
+
+
+
+
+/**********************************************************************/
+/*******************		STATA syntax		***********************/
+/**********************************************************************/
+/**  Special thanks to Deirdre Hennessy for providing the STATA code **/
+/**********************************************************************/
+
+/* Stata program used to generate the estimates presented at the 2017 "Using CHMS data workshop" */
+	
+
+/* Equivalent steps 1a to 2 in SAS/SUDAAN are completed in SAS for simplicity, 
+	the resulting data set is called derived_stata_file1.dta*/
+
+
+/* New Step 1- Import the merged dataset with derived variables*/
+
+
+use "S:\HealthSurveys\CHMS\Workshop\2017_Handson\derived_stata_file1.dta"
+
+/* New Step 2- Tell Stata that you are using survey data*/
+
+svyset _n [pweight=wgt_full], bsrweight(bsw1-bsw500) vce(bootstrap) dof(11) mse singleunit(missing)
+
+/*--------------------------------------------
+    Step 3a:  Estimate proportions and other things....
+----------------------------------------------*/
+
+/* Estimates the distribution of sleeping trouble across sex-- reporting the number of unweighted observations, row proportions, se, ci, cv and adjusted wald F */
+
+
+svy bootstrap, mse : tabulate sex sleepprob ,row se ci cv wald 
+
+
+/*-----------------------------------------------------
+    Step 3b:  Testing differences between proportions
+------------------------------------------------------*/
+
+/* Tests the difference in proportions between males and females for each category of sleeping trouble */
+
+svy bootstrap, mse : proportion sleepprob, over(sex)
+
+lincom [_prop_1]1- [_prop_1]2 
+lincom [_prop_2]1- [_prop_2]2
+lincom [_prop_3]1- [_prop_3]2
+lincom [_prop_4]1- [_prop_4]2
+
+/* NOTE: Males are 1 and females are 2, also beware the square brackets-- they have to be square:)*/
+
+
+/*--------------------------------------------
+    Step 4a: Estimate arithmetic means
+----------------------------------------------*/
+
+/* Estimates the average number of hours spent sleeping across age groups */
+
+svy bootstrap, mse : mean sleephrs, over(agegrp)
+
+
+/*---------------------------------------------------------
+    Step 4b: Testing differences between arithmetic means
+----------------------------------------------------------*/
+
+/* Tests whether the average number of hours spent sleeping by 6-11 year olds (agegrp=2) is statistically
+	different from that of each of the other age groups */
+	
+svy bootstrap, mse : mean sleephrs, over(agegrp)
+
+lincom [sleephrs]1- [sleephrs]2 
+lincom [sleephrs]3- [sleephrs]2
+lincom [sleephrs]4- [sleephrs]2
+lincom [sleephrs]5- [sleephrs]2
+lincom [sleephrs]6- [sleephrs]2
+
+/*--------------------------------------------
+    Step 5a: Histogram
+----------------------------------------------*/
+
+/* Produces a weighted histogram of the distribution of total blood mercury concentrations across the population */
+
+gen round_wt= round( wgt_full) /*Generates a weight rounded to the nearest integer--- not the same as you relative weight*/
+
+histogram bmercury_cu [fweight = round_wt], width(0.5) start(0) fraction ytitle(Weight) xtitle(Blood total mercury in ug/L- <LOD has been imputed- Conventional units) title(Histogram of blood total mercury concentrations (synthetic data))
+
+
+
+/*------------------------------------------------------------
+    Step 5b: Estimate geometric mean and confidence intervals 
+-------------------------------------------------------------*/
+
+/* Step 1- Generate the log of bmercury_cu-- code below is green because it was already created in the SAS step*/
+
+/*gen bmercury_cu_log= ln( bmercury_cu)*/
+
+
+/* Step 2- Geometric means and CIs by agegrp*/
+
+svy: mean bmercury_cu_log , over( agegrp)
+
+ereturn display, eform(geo_mean)
+
+
+/* Step 3- Get the arithmetic mean and CIs to compare*/
+
+svy: mean bmercury_cu , over( agegrp) 
+
+/*---------------------------------------------------------
+    Step 5c: Testing differences between geometric means
+----------------------------------------------------------*/
+
+/* Tests whether the geometric mean concentration of total blood mercury for 3-5 is statistically
+	different from each of the older age groups */
+
+svy: mean bmercury_cu_log , over( agegrp)
+
+ereturn display, eform(geo_mean)
+
+lincom [bmercury_cu_log]2 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]3 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]4 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]5 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]6 - [bmercury_cu_log]1
+
+/*--------------------------------------------
+    Step 6: Percentiles--- not fully possible in Stata
+----------------------------------------------*/
+
+/* Estimates the percentile distribution of blood total mercury across age groups */
+/*NOTE: In Stata you can use the pctile command, which can give you the values of the percentiles, however to get the 
+se and CIs you need to download another package called epctile*/
+
+
+_pctile bmercury_cu if agegrp==1 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==2 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==3 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==4 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==5 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==6 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+
+/*--------------------------------------------
+    Step 7a - Logistic regression
+----------------------------------------------*/
+
+xi: svy bootstrap, subpop(if agegrp>3) : logit highbpreg age sex i.bmicat3 /*For coefficients*/
+xi: svy bootstrap, subpop(if agegrp>3) : logistic highbpreg age sex i.bmicat3 /* For ORs*/
+
+
+/*--------------------------------------------
+    Step 7b - Linear regression
+----------------------------------------------*/
+
+/* Bring in derived file again and doe th svyset with dof(11)*/
+
+use "S:\HealthSurveys\CHMS\Workshop\2017_Handson\derived_stata_file1.dta", clear
+
+svyset _n [pweight=wgt_full], bsrweight(bsw1-bsw500) vce(bootstrap) dof(11) mse singleunit(missing)
+
+/*Recode female-- to reflect SAS code*/
+
+gen female=0
+replace female=1 if sex==2
+
+tab female
+
+/*Linear regression*/
+/* Stata will automatically use sleepprob=1 as the reference level*/
+
+xi: svy bootstrap, subpop(if agegrp>3) : regress bmi age female i.sleepprob
+
+/*-------------------------------------------------------------------------
+    Step 8  - Combining cycle 2 and cycle 3	environmental laboratory data
+---------------------------------------------------------------------------*/
+
+/* Steps 8a-8i done is SAS and exported-- we clear Stata before importing a new dataset*/
+/* We also have to reset the survey settings for a new dataset-- remember that the dof changes when you combine 2 cycles*/
+
+use "S:\HealthSurveys\CHMS\Workshop\2017_Handson\step_8_file.dta", clear
+svyset _n [pweight=wgt_full], bsrweight(bsw1-bsw500) vce(bootstrap) dof(24) mse singleunit(missing)
+
+/* Step 8j */
+/* Check estimates of categorical variables for significant changes across cycles */
+/* Examine proportions */
+
+svy bootstrap, mse : tabulate agegroup cycle, row ci obs cv
+svy bootstrap, mse : tabulate male cycle, row ci obs cv
+svy bootstrap, mse : tabulate smoker cycle, row ci obs cv
+
+
+/* Check estimates of BCADMIUM for significant changes across cycles */
+/* Examine distribution */
+/* As previously mentioned it is possible to examine the differences between the value of the quantiles but a special package is required to calculate the se and CIs of distributions*/
+
+_pctile bcadmium if cycle==2 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bcadmium if cycle==2 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+
+
+
+
+
+
+
+
+
+
+
+/**********************************************************************/
+/*******************		SUDAAN syntax		***********************/
+/**********************************************************************/
+
+/*--------------------------------------------
+    Step 3a:  Estimate proportions
+----------------------------------------------*/
+
+/* Estimates the distribution of sleeping trouble across sex */
+
+proc crosstab data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	tables sex*sleepprob;
+	class sex sleepprob;
+	TEST chisq  / all;
+	title "Step 3a: Estimate proportions";
+	print nsum="SAMSIZE" wsum="POPSIZE" rowper serow lowrow uprow / stest=default WSUMFMT=F8.0;
+run;
+/* NOTE: SUDAAN produces an Chisquare adjusted WaldF test statistic   */
+
+/*-----------------------------------------------------
+    Step 3b:  Testing differences between proportions
+------------------------------------------------------*/
+
+/* Tests the difference in proportions between males and females for each category of sleeping trouble */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var sleepprob sleepprob sleepprob sleepprob;
+	catlevel 1 2 3 4;
+	class sex;
+	contrast sex=(1 -1)/name="males versus females";
+	title "Step 3b: Testing differences between proportions";
+run;
+
+/*--------------------------------------------
+    Step 4a: Estimate arithmetic means
+----------------------------------------------*/
+
+/* Estimates the average number of hours spent sleeping across age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var sleephrs;
+	tables agegrp;
+	class agegrp;
+	title "Step 4a: Estimate arithmetic means";
+	print nsum="SAMSIZE" mean semean lowmean upmean/style=NCHS;
+run;
+
+/*---------------------------------------------------------
+    Step 4b: Testing differences between arithmetic means
+----------------------------------------------------------*/
+
+/* Tests whether the average number of hours spent sleeping by 6-11 year olds is statistically
+	different from that of each of the other age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var sleephrs;
+	class agegrp;
+	contrast agegrp=(1 -1 0 0 0 0 ) / name="3-5 versus 6-11";
+	contrast agegrp=(0 -1 1 0 0 0 ) / name="12-19 versus 6-11";
+	contrast agegrp=(0 -1 0 1 0 0 ) / name="20-39 versus 6-11";
+	contrast agegrp=(0 -1 0 0 1 0 ) / name="40-59 versus 6-11";
+	contrast agegrp=(0 -1 0 0 0 1 ) / name="60-79 versus 6-11";
+	title "Step 4b: Testing differences between arithmetic means";
+	print mean lowmean upmean p_mean ;
+run;
+
+/*------------------------------------------------------------
+    Step 5b: Estimate geometric mean and confidence intervals 
+-------------------------------------------------------------*/
+
+/* Using SUDAAN (but a bit of SAS too for some computation and data manipulation) */
+
+/* Five-step process to produce estimates of the geometric mean (and CLs) of blood total mercury (Bmercury_CU)
+	across age groups.  These steps are needed because SUDAAN can output a geometric mean and its
+	standard error, but cannot directly output the confidence intervals for a geometric mean */
+
+		/* Step I: Estimate the geometric mean of Bmercury_CU across age groups and output to the file called "outa_" */
+		/*** this is SUDAAN syntax ***/
+		title;
+		proc descript data=derived design=BRR DDF=11;
+			weight wgt_full;
+			REPWGT bsw1-bsw500;
+			var Bmercury_CU;
+			tables agegrp;
+			class agegrp;
+			title "Step 5b: Estimate geometric mean";
+			output nsum="SAMSIZE" geomean/filename=outa_ filetype=SAS;
+			print nsum="SAMSIZE" geomean/style=NCHS;
+		run;
+
+		/* Step II:  Saves agegrp, nsum, and geomean in output file "outa" */
+		/*** this is SAS syntax ***/
+		data outa;
+			set outa_;
+			keep agegrp nsum geomean;
+		run;
+
+
+		/* Step III: Estimate the confidence limits of the mean of the log of blood total mercury (Bmercury_CU_log) and output
+			to the file	called "outb_" */
+		/*** this is SUDAAN syntax ***/
+		proc descript data=derived design=BRR DDF=11;
+			weight wgt_full;
+			REPWGT bsw1-bsw500;
+			var Bmercury_CU_log;
+			tables agegrp;
+			class agegrp;
+			output nsum="SAMSIZE" mean lowmean upmean/filename=outb_ filetype=SAS;
+		run;
+
+
+		/* Step IV: Estimate the antilog of the confidence limits of Bmercury_CU_log to obtain the CLs
+			of the geometric mean of blood total mercury and output to the file called "outb" */ 
+		/*** this is SAS syntax ***/
+		data outb;
+			set outb_;
+			lowgeom=exp(lowmean);
+			upgeom=exp(upmean);
+			keep agegrp lowgeom upgeom;
+		run;
+
+
+		/* Step V: Sort the two output files and merge into a single file called "both" */
+		/*** this is SAS syntax ***/
+		proc sort data=outa;
+			by agegrp;
+		run;
+
+		proc sort data=outb;
+			by agegrp;
+		run;
+
+		data both;
+			merge outa outb;
+			by agegrp;
+		run;
+
+		proc datasets nolist nodetails;
+		 	delete outa outa_ outb outb_;
+		quit;
+
+/*----------------------------------------------------------------------------
+   Estimate arithmetic mean and confidence intervals for comparison purposes 
+   with the geometric mean just created in Section 5b
+------------------------------------------------------------------------------*/
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var Bmercury_CU;
+	tables agegrp;
+	class agegrp;
+	print nsum="SAMSIZE" mean semean lowmean upmean/style=NCHS;
+run;
+
+/*---------------------------------------------------------
+    Step 5c: Testing differences between geometric means
+----------------------------------------------------------*/
+
+/* Tests whether the geometric mean concentration of total blood mercury for 3-5 is statistically
+	different from each of the older age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var Bmercury_CU_log;
+	class agegrp;
+	contrast agegrp=(-1 1 0 0 0 0 ) / name="6-11 versus 3-5";
+	contrast agegrp=(-1 0 1 0 0 0 ) / name="12-19 versus 3-5";
+	contrast agegrp=(-1 0 0 1 0 0 ) / name="20-39 versus 3-5";
+	contrast agegrp=(-1 0 0 0 1 0 ) / name="40-59 versus 3-5";
+	contrast agegrp=(-1 0 0 0 0 1 ) / name="60-79 versus 3-5";
+	title "Step 5c: Testing differences between geometric means";
+	print t_mean p_mean;
+run;
+
+/*--------------------------------------------
+    Step 6: Percentiles
+----------------------------------------------*/
+
+/* Estimates the percentile distribution of blood total mercury across age groups */
+
+proc descript data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var Bmercury_CU;
+	PERCENTILE 95/MEDIAN QUARTILES;
+	tables agegrp;
+	class agegrp;
+	title "Step 6: Percentiles";
+	print qtile seqtile lowqtile upqtile;
+run;
+
+/*--------------------------------------------
+    Step 7 - Logistic regression
+----------------------------------------------*/
+
+proc rlogist data=derived design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	subpopn agegrp>3; * Limits the analysis to 20-79 year olds;
+	model highBPreg=age sex bmicat3 ;
+	class sex bmicat3 ;
+	reflevel sex=1 bmicat3=1 ;
+	test adjwaldf satadjf; /* produces an adjusted Wald F and Satterthwaite adjusted F test */
+	title "Step 7: Logistic regression";
+run;
+
+/*--------------------------------------------
+    Step 7b - Linear regression
+----------------------------------------------*/
+
+/*	NOTE:  in linear regression models, SUDAAN allows you to specify
+	reference groups for your categorical covariates */
+
+proc regress data=derived1 design=BRR DDF=11;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	model BMI=age female sleepprob;
+	class sleepprob;
+	reflevel sleepprob=1;
+	test adjwaldf satadjf;
+	title "Step 7b: Linear regression";
+run;
+
+
+/*-------------------------------------------------------------------------
+    Step 8  - Combining cycle 2 and cycle 3	environmental laboratory data
+---------------------------------------------------------------------------*/
+
+/* Note that Steps 8a to 8i were done in SAS - see above */
+
+/* Step 8j */
+/* Check estimates of categorical variables for significant changes across cycles */
+/* Examine proportions */
+
+proc crosstab data=C2C3_weighted2 design=BRR DDF=24; * Note the extra degress of freedom;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	tables cycle*(agegroup male smoker);
+	class cycle agegroup male smoker;
+	print nsum="SAMSIZE" WSUM="POPSIZE" rowper serow lowrow uprow/WSUMFMT=F8.0;
+	title "Step 8j: Checking cycle to cycle differences in categorical variables";
+run;
+
+/* Check estimates of BCADMIUM for significant changes across cycles */
+/* Examine distribution */
+
+proc descript data=C2C3_weighted2 design=BRR DDF=24;
+	weight wgt_full;
+	REPWGT bsw1-bsw500;
+	var BCADMIUM;
+	PERCENTILE 95/MEDIAN QUARTILES;
+	tables cycle;
+	class cycle;
+	print qtile seqtile lowqtile upqtile;
+	title "Step 8j: Checking cycle to cycle differences in percentile distribution of blood cadmium";
+run;

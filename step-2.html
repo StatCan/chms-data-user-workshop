@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Step 2 | CHMS data user workshop (non-SASsy version)</title>
+  <meta name="description" content="This book contains the R code for the CHMS data user workshop." />
+  <meta name="generator" content="bookdown 0.34 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Step 2 | CHMS data user workshop (non-SASsy version)" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This book contains the R code for the CHMS data user workshop." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Step 2 | CHMS data user workshop (non-SASsy version)" />
+  
+  <meta name="twitter:description" content="This book contains the R code for the CHMS data user workshop." />
+  
+
+<meta name="author" content="" />
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="step-1.html"/>
+<link rel="next" href="step-3.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  background-color: #f8f8f8; }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ef2929; } /* Alert */
+code span.an { color: #8f5902; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #c4a000; } /* Attribute */
+code span.bn { color: #0000cf; } /* BaseN */
+code span.cf { color: #204a87; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4e9a06; } /* Char */
+code span.cn { color: #000000; } /* Constant */
+code span.co { color: #8f5902; font-style: italic; } /* Comment */
+code span.cv { color: #8f5902; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #8f5902; font-weight: bold; font-style: italic; } /* Documentation */
+code span.dt { color: #204a87; } /* DataType */
+code span.dv { color: #0000cf; } /* DecVal */
+code span.er { color: #a40000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #0000cf; } /* Float */
+code span.fu { color: #000000; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #8f5902; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #204a87; font-weight: bold; } /* Keyword */
+code span.op { color: #ce5c00; font-weight: bold; } /* Operator */
+code span.ot { color: #8f5902; } /* Other */
+code span.pp { color: #8f5902; font-style: italic; } /* Preprocessor */
+code span.sc { color: #000000; } /* SpecialChar */
+code span.ss { color: #4e9a06; } /* SpecialString */
+code span.st { color: #4e9a06; } /* String */
+code span.va { color: #000000; } /* Variable */
+code span.vs { color: #4e9a06; } /* VerbatimString */
+code span.wa { color: #8f5902; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./index.html">CHMS workshop</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a></li>
+<li class="chapter" data-level="" data-path="import-dependencies.html"><a href="import-dependencies.html"><i class="fa fa-check"></i>Import dependencies</a></li>
+<li class="chapter" data-level="" data-path="import-data.html"><a href="import-data.html"><i class="fa fa-check"></i>Import data</a></li>
+<li class="chapter" data-level="" data-path="step-1.html"><a href="step-1.html"><i class="fa fa-check"></i>Step 1</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-1.html"><a href="step-1.html#step-1a"><i class="fa fa-check"></i>Step 1a</a></li>
+<li class="chapter" data-level="" data-path="step-1.html"><a href="step-1.html#step-1b"><i class="fa fa-check"></i>Step 1b</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-2.html"><a href="step-2.html"><i class="fa fa-check"></i>Step 2</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-2.html"><a href="step-2.html#full-example-of-imputation-and-conversion"><i class="fa fa-check"></i>Full example of imputation and conversion</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html"><i class="fa fa-check"></i>Step 3</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#step-3a-estimate-proportions"><i class="fa fa-check"></i>Step 3a: estimate proportions</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#tests-of-association"><i class="fa fa-check"></i>Tests of association</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#first-order-correction"><i class="fa fa-check"></i>First-order correction</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#second-order-correction"><i class="fa fa-check"></i>Second-order correction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#step-3b-testing-differences-between-proportions"><i class="fa fa-check"></i>Step 3b: testing differences between proportions</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-1"><i class="fa fa-check"></i>sleepprob equals 1</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-1"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-1"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-1"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-2"><i class="fa fa-check"></i>sleepprob equals 2</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-2"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-2"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-2"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks-1"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-3"><i class="fa fa-check"></i>sleepprob equals 3</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-3"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-3"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-3"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks-2"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#sleepprob-equals-4"><i class="fa fa-check"></i>sleepprob equals 4</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#data-summary-4"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#variance-estimation-4"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#frequency-statistics-4"><i class="fa fa-check"></i>Frequency statistics</a></li>
+<li class="chapter" data-level="" data-path="step-3.html"><a href="step-3.html#column-1-risks-3"><i class="fa fa-check"></i>Column 1 risks</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html"><i class="fa fa-check"></i>Step 4</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#step-4a-estimate-arithmetic-means"><i class="fa fa-check"></i>Step 4a: estimate arithmetic means</a></li>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#step-4b-testing-differences-between-arithmetic-means"><i class="fa fa-check"></i>Step 4b: testing differences between arithmetic means</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#generalized-linear-model"><i class="fa fa-check"></i>Generalized linear model</a></li>
+<li class="chapter" data-level="" data-path="step-4.html"><a href="step-4.html#wald-test"><i class="fa fa-check"></i>Wald test</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html"><i class="fa fa-check"></i>Step 5</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#step-5a-histogram"><i class="fa fa-check"></i>Step 5a: histogram</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#step-5b-estimate-geometric-mean-and-confidence-intervals"><i class="fa fa-check"></i>Step 5b: estimate geometric mean and confidence intervals</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#geometric-mean"><i class="fa fa-check"></i>Geometric mean</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#domain-analysis"><i class="fa fa-check"></i>Domain analysis</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#step-5c-testing-differences-between-geometric-means"><i class="fa fa-check"></i>Step 5c: testing differences between geometric means</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#generalized-linear-model-1"><i class="fa fa-check"></i>Generalized linear model</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#wald-test-1"><i class="fa fa-check"></i>Wald test</a></li>
+<li class="chapter" data-level="" data-path="step-5.html"><a href="step-5.html#multiple-test-correction"><i class="fa fa-check"></i>Multiple test correction</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-6-percentiles.html"><a href="step-6-percentiles.html"><i class="fa fa-check"></i>Step 6: percentiles</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html"><i class="fa fa-check"></i>Step 7</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#step-7a-logistic-regression"><i class="fa fa-check"></i>Step 7a: logistic regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#response-profile"><i class="fa fa-check"></i>Response profile</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#type-3-analysis-of-effects"><i class="fa fa-check"></i>Type 3 analysis of effects</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#odds-ratio-estimates"><i class="fa fa-check"></i>Odds ratio estimates</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#association-of-predicted-probabilities-and-observed-responses"><i class="fa fa-check"></i>Association of predicted probabilities and observed responses</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#step-7b-linear-regression"><i class="fa fa-check"></i>Step 7b: linear regression</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#estimated-regression-coefficients"><i class="fa fa-check"></i>Estimated regression coefficients</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#tests-of-model-effects"><i class="fa fa-check"></i>Tests of model effects</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-age-sex-sleepprob"><i class="fa fa-check"></i>BMI ~ age + sex + sleepprob</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-age"><i class="fa fa-check"></i>BMI ~ age</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-sex"><i class="fa fa-check"></i>BMI ~ sex</a></li>
+<li class="chapter" data-level="" data-path="step-7.html"><a href="step-7.html#bmi-sleepprob"><i class="fa fa-check"></i>BMI ~ sleepprob</a></li>
+</ul></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html"><i class="fa fa-check"></i>Step 8</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#steps-8a-b-combining-cycle-2-and-cycle-3-environmental-laboratory-data"><i class="fa fa-check"></i>Steps 8a-b: combining cycle 2 and cycle 3 environmental laboratory data</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#steps-8c-f-stack-cycle-2-and-cycle-3-datafiles-together-add-weights"><i class="fa fa-check"></i>Steps 8c-f: stack cycle 2 and cycle 3 datafiles together, add weights</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8g-compare-the-cycle-2-and-cycle-3-estimates-of-lab_bcd"><i class="fa fa-check"></i>Step 8g: compare the cycle 2 and cycle 3 estimates of LAB_BCD</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-2"><i class="fa fa-check"></i>Cycle indicator = 2</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-3"><i class="fa fa-check"></i>Cycle indicator = 3</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8h-change-the-values-of-lab_bcd-of-999.9-in-cycle-2-and-999.99-in-cycle-3-to-missing"><i class="fa fa-check"></i>Step 8h: change the values of LAB_BCD of 999.9 in cycle 2 and 999.99 in cycle 3 to missing</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-2-1"><i class="fa fa-check"></i>Cycle indicator = 2</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-3-1"><i class="fa fa-check"></i>Cycle indicator = 3</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#bcadmium"><i class="fa fa-check"></i>BCADMIUM</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-2-2"><i class="fa fa-check"></i>Cycle indicator = 2</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#cycle-indicator-3-2"><i class="fa fa-check"></i>Cycle indicator = 3</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8i-derive-necessary-variables"><i class="fa fa-check"></i>Step 8i: derive necessary variables</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#step-8j-assess-any-significant-changes-between-cycles"><i class="fa fa-check"></i>Step 8j: assess any significant changes between cycles</a>
+<ul>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#data-summary-5"><i class="fa fa-check"></i>Data summary</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#variance-estimation-5"><i class="fa fa-check"></i>Variance estimation</a></li>
+<li class="chapter" data-level="" data-path="step-8.html"><a href="step-8.html#test-of-association"><i class="fa fa-check"></i>Test of association</a></li>
+</ul></li>
+</ul></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">CHMS data user workshop (non-SASsy version)</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="step-2" class="section level1 hasAnchor">
+<h1>Step 2<a href="step-2.html#step-2" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Create derived variables used in the hands-on examples.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="step-2.html#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive agegrp (age group at clinic visit)</span></span>
+<span id="cb5-2"><a href="step-2.html#cb5-2" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="step-2.html#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-4"><a href="step-2.html#cb5-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">agegrp =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-5"><a href="step-2.html#cb5-5" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-6"><a href="step-2.html#cb5-6" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">&gt;=</span> <span class="dv">3</span> <span class="sc">&amp;</span> CLC_AGE <span class="sc">&lt;=</span> <span class="dv">5</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-7"><a href="step-2.html#cb5-7" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">&gt;=</span> <span class="dv">6</span> <span class="sc">&amp;</span> CLC_AGE <span class="sc">&lt;=</span> <span class="dv">11</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb5-8"><a href="step-2.html#cb5-8" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">&gt;=</span> <span class="dv">12</span> <span class="sc">&amp;</span> CLC_AGE <span class="sc">&lt;=</span> <span class="dv">19</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb5-9"><a href="step-2.html#cb5-9" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">&gt;=</span> <span class="dv">20</span> <span class="sc">&amp;</span> CLC_AGE <span class="sc">&lt;=</span> <span class="dv">39</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb5-10"><a href="step-2.html#cb5-10" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">&gt;=</span> <span class="dv">40</span> <span class="sc">&amp;</span> CLC_AGE <span class="sc">&lt;=</span> <span class="dv">59</span> <span class="sc">~</span> <span class="dv">5</span>,</span>
+<span id="cb5-11"><a href="step-2.html#cb5-11" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">&gt;=</span> <span class="dv">60</span> <span class="sc">&amp;</span> CLC_AGE <span class="sc">&lt;=</span> <span class="dv">79</span> <span class="sc">~</span> <span class="dv">6</span>,</span>
+<span id="cb5-12"><a href="step-2.html#cb5-12" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb5-13"><a href="step-2.html#cb5-13" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span></span>
+<span id="cb5-14"><a href="step-2.html#cb5-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-15"><a href="step-2.html#cb5-15" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-16"><a href="step-2.html#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="step-2.html#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive Hsys</span></span>
+<span id="cb5-18"><a href="step-2.html#cb5-18" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-19"><a href="step-2.html#cb5-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-20"><a href="step-2.html#cb5-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">Hsys =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-21"><a href="step-2.html#cb5-21" aria-hidden="true" tabindex="-1"></a>      BPMDPBPS <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> BPMDPBPS <span class="sc">&lt;</span> <span class="dv">140</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb5-22"><a href="step-2.html#cb5-22" aria-hidden="true" tabindex="-1"></a>      BPMDPBPS <span class="sc">&gt;=</span> <span class="dv">140</span> <span class="sc">&amp;</span> BPMDPBPS <span class="sc">&lt;</span> <span class="dv">996</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-23"><a href="step-2.html#cb5-23" aria-hidden="true" tabindex="-1"></a>      BPMDPBPS <span class="sc">&gt;=</span> <span class="dv">996</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb5-24"><a href="step-2.html#cb5-24" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">1</span> <span class="co"># Assign 1 if no other condition met</span></span>
+<span id="cb5-25"><a href="step-2.html#cb5-25" aria-hidden="true" tabindex="-1"></a>    )  </span>
+<span id="cb5-26"><a href="step-2.html#cb5-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-27"><a href="step-2.html#cb5-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-28"><a href="step-2.html#cb5-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive Hdias</span></span>
+<span id="cb5-29"><a href="step-2.html#cb5-29" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-30"><a href="step-2.html#cb5-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-31"><a href="step-2.html#cb5-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">Hdias =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-32"><a href="step-2.html#cb5-32" aria-hidden="true" tabindex="-1"></a>      BPMDPBPD <span class="sc">&gt;=</span> <span class="dv">0</span> <span class="sc">&amp;</span> BPMDPBPD <span class="sc">&lt;</span> <span class="dv">90</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb5-33"><a href="step-2.html#cb5-33" aria-hidden="true" tabindex="-1"></a>      BPMDPBPD <span class="sc">&gt;=</span> <span class="dv">90</span> <span class="sc">&amp;</span> BPMDPBPD <span class="sc">&lt;</span> <span class="dv">996</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-34"><a href="step-2.html#cb5-34" aria-hidden="true" tabindex="-1"></a>      BPMDPBPD <span class="sc">&gt;=</span> <span class="dv">996</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb5-35"><a href="step-2.html#cb5-35" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">1</span> <span class="co"># Assign 1 if no other condition met</span></span>
+<span id="cb5-36"><a href="step-2.html#cb5-36" aria-hidden="true" tabindex="-1"></a>    )  </span>
+<span id="cb5-37"><a href="step-2.html#cb5-37" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-38"><a href="step-2.html#cb5-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-39"><a href="step-2.html#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive highBP (1 = high blood pressure, 2 = not high blood pressure)</span></span>
+<span id="cb5-40"><a href="step-2.html#cb5-40" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-41"><a href="step-2.html#cb5-41" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-42"><a href="step-2.html#cb5-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">highBP =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-43"><a href="step-2.html#cb5-43" aria-hidden="true" tabindex="-1"></a>      Hsys <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> Hdias <span class="sc">==</span> <span class="dv">1</span> <span class="sc">|</span> CCC_32 <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-44"><a href="step-2.html#cb5-44" aria-hidden="true" tabindex="-1"></a>      <span class="fu">is.na</span>(Hsys) <span class="sc">&amp;</span> <span class="fu">is.na</span>(Hdias) <span class="sc">&amp;</span> CCC_32 <span class="sc">!=</span> <span class="dv">1</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb5-45"><a href="step-2.html#cb5-45" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="dv">2</span> <span class="co"># Assign 2 if no other condition met</span></span>
+<span id="cb5-46"><a href="step-2.html#cb5-46" aria-hidden="true" tabindex="-1"></a>    )  </span>
+<span id="cb5-47"><a href="step-2.html#cb5-47" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-48"><a href="step-2.html#cb5-48" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-49"><a href="step-2.html#cb5-49" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive highBPreg</span></span>
+<span id="cb5-50"><a href="step-2.html#cb5-50" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-51"><a href="step-2.html#cb5-51" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-52"><a href="step-2.html#cb5-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">highBPreg =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-53"><a href="step-2.html#cb5-53" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-54"><a href="step-2.html#cb5-54" aria-hidden="true" tabindex="-1"></a>        highBP <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-55"><a href="step-2.html#cb5-55" aria-hidden="true" tabindex="-1"></a>        highBP <span class="sc">==</span> <span class="dv">2</span> <span class="sc">~</span> <span class="dv">0</span>,</span>
+<span id="cb5-56"><a href="step-2.html#cb5-56" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span> <span class="co"># Assign NA if no other condition met</span></span>
+<span id="cb5-57"><a href="step-2.html#cb5-57" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb5-58"><a href="step-2.html#cb5-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span></span>
+<span id="cb5-59"><a href="step-2.html#cb5-59" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-60"><a href="step-2.html#cb5-60" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-61"><a href="step-2.html#cb5-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-62"><a href="step-2.html#cb5-62" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive BMI</span></span>
+<span id="cb5-63"><a href="step-2.html#cb5-63" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-64"><a href="step-2.html#cb5-64" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-65"><a href="step-2.html#cb5-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">BMI =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-66"><a href="step-2.html#cb5-66" aria-hidden="true" tabindex="-1"></a>      HWMDBMI <span class="sc">&gt;=</span> <span class="fl">99.96</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb5-67"><a href="step-2.html#cb5-67" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> HWMDBMI <span class="co"># Retain BMI value if no other condition met</span></span>
+<span id="cb5-68"><a href="step-2.html#cb5-68" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-69"><a href="step-2.html#cb5-69" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-70"><a href="step-2.html#cb5-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-71"><a href="step-2.html#cb5-71" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive BMIcat3</span></span>
+<span id="cb5-72"><a href="step-2.html#cb5-72" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-73"><a href="step-2.html#cb5-73" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-74"><a href="step-2.html#cb5-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">BMIcat3 =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-75"><a href="step-2.html#cb5-75" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-76"><a href="step-2.html#cb5-76" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">%in%</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span> <span class="sc">&amp;</span> HWMDBMIA <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-77"><a href="step-2.html#cb5-77" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">%in%</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span> <span class="sc">&amp;</span> HWMDBMIA <span class="sc">%in%</span> <span class="dv">3</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb5-78"><a href="step-2.html#cb5-78" aria-hidden="true" tabindex="-1"></a>        CLC_AGE <span class="sc">%in%</span> <span class="dv">20</span><span class="sc">:</span><span class="dv">80</span> <span class="sc">&amp;</span> HWMDBMIA <span class="sc">%in%</span> <span class="dv">4</span><span class="sc">:</span><span class="dv">6</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb5-79"><a href="step-2.html#cb5-79" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span> <span class="co"># Assign NA if no other condition met</span></span>
+<span id="cb5-80"><a href="step-2.html#cb5-80" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb5-81"><a href="step-2.html#cb5-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span></span>
+<span id="cb5-82"><a href="step-2.html#cb5-82" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-83"><a href="step-2.html#cb5-83" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-84"><a href="step-2.html#cb5-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-85"><a href="step-2.html#cb5-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive sex</span></span>
+<span id="cb5-86"><a href="step-2.html#cb5-86" aria-hidden="true" tabindex="-1"></a>c3full<span class="sc">$</span>sex <span class="ot">&lt;-</span> <span class="fu">factor</span>(</span>
+<span id="cb5-87"><a href="step-2.html#cb5-87" aria-hidden="true" tabindex="-1"></a>  <span class="at">x =</span> c3full<span class="sc">$</span>CLC_SEX,</span>
+<span id="cb5-88"><a href="step-2.html#cb5-88" aria-hidden="true" tabindex="-1"></a>  <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span></span>
+<span id="cb5-89"><a href="step-2.html#cb5-89" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-90"><a href="step-2.html#cb5-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-91"><a href="step-2.html#cb5-91" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive age</span></span>
+<span id="cb5-92"><a href="step-2.html#cb5-92" aria-hidden="true" tabindex="-1"></a>c3full<span class="sc">$</span>age <span class="ot">&lt;-</span> c3full<span class="sc">$</span>CLC_AGE</span>
+<span id="cb5-93"><a href="step-2.html#cb5-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-94"><a href="step-2.html#cb5-94" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive sleepprob</span></span>
+<span id="cb5-95"><a href="step-2.html#cb5-95" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-96"><a href="step-2.html#cb5-96" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-97"><a href="step-2.html#cb5-97" aria-hidden="true" tabindex="-1"></a>    <span class="at">sleepprob =</span> <span class="fu">factor</span>(</span>
+<span id="cb5-98"><a href="step-2.html#cb5-98" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-99"><a href="step-2.html#cb5-99" aria-hidden="true" tabindex="-1"></a>        SLP_12 <span class="sc">%in%</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">2</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb5-100"><a href="step-2.html#cb5-100" aria-hidden="true" tabindex="-1"></a>        SLP_12 <span class="sc">%in%</span> <span class="dv">3</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb5-101"><a href="step-2.html#cb5-101" aria-hidden="true" tabindex="-1"></a>        SLP_12 <span class="sc">%in%</span> <span class="dv">4</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb5-102"><a href="step-2.html#cb5-102" aria-hidden="true" tabindex="-1"></a>        SLP_12 <span class="sc">%in%</span> <span class="dv">5</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb5-103"><a href="step-2.html#cb5-103" aria-hidden="true" tabindex="-1"></a>        <span class="cn">TRUE</span> <span class="sc">~</span> <span class="cn">NA</span> <span class="co"># Assign NA if no other condition met</span></span>
+<span id="cb5-104"><a href="step-2.html#cb5-104" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb5-105"><a href="step-2.html#cb5-105" aria-hidden="true" tabindex="-1"></a>      <span class="at">levels =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">4</span></span>
+<span id="cb5-106"><a href="step-2.html#cb5-106" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-107"><a href="step-2.html#cb5-107" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb5-108"><a href="step-2.html#cb5-108" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-109"><a href="step-2.html#cb5-109" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive sleephrs</span></span>
+<span id="cb5-110"><a href="step-2.html#cb5-110" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb5-111"><a href="step-2.html#cb5-111" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb5-112"><a href="step-2.html#cb5-112" aria-hidden="true" tabindex="-1"></a>    <span class="at">sleephrs =</span> <span class="fu">case_when</span>(</span>
+<span id="cb5-113"><a href="step-2.html#cb5-113" aria-hidden="true" tabindex="-1"></a>      SLP_11 <span class="sc">&gt;=</span> <span class="fl">99.7</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb5-114"><a href="step-2.html#cb5-114" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> SLP_11 <span class="co"># Assign SLP_11 value if no other condition met</span></span>
+<span id="cb5-115"><a href="step-2.html#cb5-115" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-116"><a href="step-2.html#cb5-116" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+<div id="full-example-of-imputation-and-conversion" class="section level2 hasAnchor">
+<h2>Full example of imputation and conversion<a href="step-2.html#full-example-of-imputation-and-conversion" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ul>
+<li>STEP A: Convert all 95s to one half of the LOD values<br />
+</li>
+<li>STEP B: Convert the reserve codes equal to “valid skip” or “not stated” to blanks</li>
+<li>STEP C: Convert all values to conventional units</li>
+<li>STEP D: Get the natural log of the conventional units</li>
+</ul>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="step-2.html#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Steps A-D</span></span>
+<span id="cb6-2"><a href="step-2.html#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="step-2.html#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Derive Bmercury, Bmercury_CU and Bmercury_CU_log</span></span>
+<span id="cb6-4"><a href="step-2.html#cb6-4" aria-hidden="true" tabindex="-1"></a>c3full <span class="ot">&lt;-</span> c3full <span class="sc">%&gt;%</span></span>
+<span id="cb6-5"><a href="step-2.html#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-6"><a href="step-2.html#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Bmercury =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-7"><a href="step-2.html#cb6-7" aria-hidden="true" tabindex="-1"></a>      LAB_BHG <span class="sc">==</span> <span class="fl">999.5</span> <span class="sc">~</span> <span class="fl">2.1</span> <span class="sc">/</span> <span class="dv">2</span>,</span>
+<span id="cb6-8"><a href="step-2.html#cb6-8" aria-hidden="true" tabindex="-1"></a>      LAB_BHG <span class="sc">&gt;</span>  <span class="fl">999.5</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb6-9"><a href="step-2.html#cb6-9" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> LAB_BHG <span class="co"># Assign LAB_BHG value if no other condition met</span></span>
+<span id="cb6-10"><a href="step-2.html#cb6-10" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb6-11"><a href="step-2.html#cb6-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">Bmercury_CU =</span> Bmercury <span class="sc">*</span> <span class="fl">0.2006</span>,</span>
+<span id="cb6-12"><a href="step-2.html#cb6-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">Bmercury_CU_log =</span> <span class="fu">log</span>(Bmercury_CU)</span>
+<span id="cb6-13"><a href="step-2.html#cb6-13" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="step-1.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="step-3.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,215 @@
+
+/**********************************************************************/
+/*******************		STATA syntax		***********************/
+/**********************************************************************/
+/**  Special thanks to Deirdre Hennessy for providing the STATA code **/
+/**********************************************************************/
+
+/* Stata program used to generate the estimates for the CHMS data user workshop */
+	
+
+/* Equivalent steps 1a to 2 were completed in SAS for simplicity, 
+	the resulting data set is called derived_stata_file1.dta*/
+
+
+/* New Step 1- Import the merged dataset with derived variables*/
+
+
+use "S:\HealthSurveys\CHMS\Workshop\2017_Handson\derived_stata_file1.dta"
+
+/* New Step 2- Tell Stata that you are using survey data*/
+
+svyset _n [pweight=wgt_full], bsrweight(bsw1-bsw500) vce(bootstrap) dof(11) mse singleunit(missing)
+
+/*--------------------------------------------
+    Step 3a:  Estimate proportions and other things....
+----------------------------------------------*/
+
+/* Estimates the distribution of sleeping trouble across sex-- reporting the number of unweighted observations, row proportions, se, ci, cv and adjusted wald F */
+
+
+svy bootstrap, mse : tabulate sex sleepprob ,row se ci cv wald 
+
+
+/*-----------------------------------------------------
+    Step 3b:  Testing differences between proportions
+------------------------------------------------------*/
+
+/* Tests the difference in proportions between males and females for each category of sleeping trouble */
+
+svy bootstrap, mse : proportion sleepprob, over(sex)
+
+lincom [_prop_1]1- [_prop_1]2 
+lincom [_prop_2]1- [_prop_2]2
+lincom [_prop_3]1- [_prop_3]2
+lincom [_prop_4]1- [_prop_4]2
+
+/* NOTE: Males are 1 and females are 2, also beware the square brackets-- they have to be square:)*/
+
+
+/*--------------------------------------------
+    Step 4a: Estimate arithmetic means
+----------------------------------------------*/
+
+/* Estimates the average number of hours spent sleeping across age groups */
+
+svy bootstrap, mse : mean sleephrs, over(agegrp)
+
+
+/*---------------------------------------------------------
+    Step 4b: Testing differences between arithmetic means
+----------------------------------------------------------*/
+
+/* Tests whether the average number of hours spent sleeping by 6-11 year olds (agegrp=2) is statistically
+	different from that of each of the other age groups */
+	
+svy bootstrap, mse : mean sleephrs, over(agegrp)
+
+lincom [sleephrs]1- [sleephrs]2 
+lincom [sleephrs]3- [sleephrs]2
+lincom [sleephrs]4- [sleephrs]2
+lincom [sleephrs]5- [sleephrs]2
+lincom [sleephrs]6- [sleephrs]2
+
+/*--------------------------------------------
+    Step 5a: Histogram
+----------------------------------------------*/
+
+/* Produces a weighted histogram of the distribution of total blood mercury concentrations across the population */
+
+gen round_wt= round( wgt_full) /*Generates a weight rounded to the nearest integer--- not the same as you relative weight*/
+
+histogram bmercury_cu [fweight = round_wt], width(0.5) start(0) fraction ytitle(Weight) xtitle(Blood total mercury in ug/L- <LOD has been imputed- Conventional units) title(Histogram of blood total mercury concentrations (synthetic data))
+
+
+
+/*------------------------------------------------------------
+    Step 5b: Estimate geometric mean and confidence intervals 
+-------------------------------------------------------------*/
+
+/* Step 1- Generate the log of bmercury_cu-- code below is green because it was already created in the SAS step*/
+
+/*gen bmercury_cu_log= ln( bmercury_cu)*/
+
+
+/* Step 2- Geometric means and CIs by agegrp*/
+
+svy: mean bmercury_cu_log , over( agegrp)
+
+ereturn display, eform(geo_mean)
+
+
+/* Step 3- Get the arithmetic mean and CIs to compare*/
+
+svy: mean bmercury_cu , over( agegrp) 
+
+/*---------------------------------------------------------
+    Step 5c: Testing differences between geometric means
+----------------------------------------------------------*/
+
+/* Tests whether the geometric mean concentration of total blood mercury for 3-5 is statistically
+	different from each of the older age groups */
+
+svy: mean bmercury_cu_log , over( agegrp)
+
+ereturn display, eform(geo_mean)
+
+lincom [bmercury_cu_log]2 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]3 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]4 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]5 - [bmercury_cu_log]1
+lincom [bmercury_cu_log]6 - [bmercury_cu_log]1
+
+/*--------------------------------------------
+    Step 6: Percentiles--- not fully possible in Stata
+----------------------------------------------*/
+
+/* Estimates the percentile distribution of blood total mercury across age groups */
+/*NOTE: In Stata you can use the pctile command, which can give you the values of the percentiles, however to get the 
+se and CIs you need to download another package called epctile*/
+
+
+_pctile bmercury_cu if agegrp==1 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==2 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==3 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==4 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==5 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bmercury_cu if agegrp==6 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+
+/*--------------------------------------------
+    Step 7a - Logistic regression
+----------------------------------------------*/
+
+xi: svy bootstrap, subpop(if agegrp>3) : logit highbpreg age sex i.bmicat3 /*For coefficients*/
+xi: svy bootstrap, subpop(if agegrp>3) : logistic highbpreg age sex i.bmicat3 /* For ORs*/
+
+
+/*--------------------------------------------
+    Step 7b - Linear regression
+----------------------------------------------*/
+
+/* Bring in derived file again and doe th svyset with dof(11)*/
+
+use "S:\HealthSurveys\CHMS\Workshop\2017_Handson\derived_stata_file1.dta", clear
+
+svyset _n [pweight=wgt_full], bsrweight(bsw1-bsw500) vce(bootstrap) dof(11) mse singleunit(missing)
+
+/*Recode female-- to reflect SAS code*/
+
+gen female=0
+replace female=1 if sex==2
+
+tab female
+
+/*Linear regression*/
+/* Stata will automatically use sleepprob=1 as the reference level*/
+
+xi: svy bootstrap, subpop(if agegrp>3) : regress bmi age female i.sleepprob
+
+/*-------------------------------------------------------------------------
+    Step 8  - Combining cycle 2 and cycle 3	environmental laboratory data
+---------------------------------------------------------------------------*/
+
+/* Steps 8a-8i done is SAS and exported-- we clear Stata before importing a new dataset*/
+/* We also have to reset the survey settings for a new dataset-- remember that the dof changes when you combine 2 cycles*/
+
+use "S:\HealthSurveys\CHMS\Workshop\2017_Handson\step_8_file.dta", clear
+svyset _n [pweight=wgt_full], bsrweight(bsw1-bsw500) vce(bootstrap) dof(24) mse singleunit(missing)
+
+/* Step 8j */
+/* Check estimates of categorical variables for significant changes across cycles */
+/* Examine proportions */
+
+svy bootstrap, mse : tabulate agegroup cycle, row ci obs cv
+svy bootstrap, mse : tabulate male cycle, row ci obs cv
+svy bootstrap, mse : tabulate smoker cycle, row ci obs cv
+
+
+/* Check estimates of BCADMIUM for significant changes across cycles */
+/* Examine distribution */
+/* As previously mentioned it is possible to examine the differences between the value of the quantiles but a special package is required to calculate the se and CIs of distributions*/
+
+_pctile bcadmium if cycle==2 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+_pctile bcadmium if cycle==2 [pw= wgt_full ], p(25 50 75 95)
+return list
+
+
+
+
+
+
+
